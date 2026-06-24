@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Spotify Premium UI - Fake Audio Sync</title>
+    <title>Spotify Premium UI - Manual Scroll Observer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -27,7 +27,7 @@
             background: linear-gradient(180deg, #1E3A8A 0%, #0F172A 40%, #121212 100%); 
         }
 
-        /* Animaciones para las letras */
+        /* Animaciones para las letras según requisitos estrictos */
         .lyric-line { 
             transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out; 
             transform-origin: left center; 
@@ -41,7 +41,7 @@
             transform: scale(1); 
         }
 
-        /* Estilos de botones Toggles */
+        /* Estilos de botones Toggles (Nativos y Elegantes) */
         .toggle-btn { 
             background-color: transparent; 
             color: rgba(255, 255, 255, 0.5); 
@@ -54,7 +54,7 @@
             border-color: transparent; 
         }
 
-        /* Utilidad para iconos rellenos (Lucide no los tiene por defecto en solid) */
+        /* Utilidad para iconos rellenos */
         .icon-solid { fill: currentColor; stroke: currentColor; }
     </style>
 </head>
@@ -79,12 +79,11 @@
         </header>
 
         <main id="lyrics-container" class="flex-1 overflow-y-auto no-scrollbar px-6 pb-72 pt-8 space-y-8 relative z-10 scroll-smooth">
-            <div id="spacer-top" class="h-10"></div>
-            </main>
+            <div id="spacer-top" class="h-[30vh]"></div> </main>
 
-        <footer class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-[#121212] to-transparent pt-24 pb-8 px-6 z-30">
+        <footer class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-[#121212] to-transparent pt-24 pb-8 px-6 z-30 pointer-events-none">
             
-            <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center justify-between mb-6 pointer-events-auto">
                 <div class="flex items-center gap-4">
                     <div class="w-[56px] h-[56px] bg-[#1E3A8A] rounded flex items-center justify-center shadow-md overflow-hidden relative">
                         <i data-lucide="music" class="w-8 h-8 text-white/50"></i>
@@ -99,28 +98,25 @@
                 </button>
             </div>
 
-            <div class="space-y-1.5 mb-6">
-                <div id="progress-container" class="w-full h-1.5 bg-white/20 rounded-full cursor-pointer relative group">
-                    <div id="progress-bar" class="h-full bg-white rounded-full w-0 relative transition-all duration-[100ms] linear">
-                        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md"></div>
-                    </div>
+            <div class="space-y-1.5 mb-6 pointer-events-auto">
+                <div class="w-full h-1.5 bg-white/20 rounded-full relative">
+                    <div class="h-full bg-white rounded-full w-0 relative"></div>
                 </div>
                 <div class="flex justify-between text-[11px] font-medium text-white/60 tracking-wide font-mono">
-                    <span id="current-time">0:00</span>
-                    <span id="total-time">0:00</span>
+                    <span>--:--</span>
+                    <span>--:--</span>
                 </div>
             </div>
 
-            <div class="flex items-center justify-between mb-6 px-1">
+            <div class="flex items-center justify-between mb-6 px-1 pointer-events-auto">
                 <button class="text-[#1ED760] active:scale-90 transition-transform">
                     <i data-lucide="shuffle" class="w-[22px] h-[22px] stroke-[2.5]"></i>
                 </button>
                 <button class="text-white active:scale-90 transition-transform">
                     <i data-lucide="skip-back" class="w-9 h-9 icon-solid"></i>
                 </button>
-                <button id="play-btn" class="w-[64px] h-[64px] flex items-center justify-center bg-white rounded-full text-black hover:scale-105 active:scale-95 transition-transform shadow-xl">
-                    <i data-lucide="play" id="play-icon" class="w-8 h-8 ml-1 icon-solid"></i>
-                    <i data-lucide="pause" id="pause-icon" class="w-8 h-8 hidden icon-solid"></i>
+                <button class="w-[64px] h-[64px] flex items-center justify-center bg-white rounded-full text-black hover:scale-105 active:scale-95 transition-transform shadow-xl">
+                    <i data-lucide="play" class="w-8 h-8 ml-1 icon-solid"></i>
                 </button>
                 <button class="text-white active:scale-90 transition-transform">
                     <i data-lucide="skip-forward" class="w-9 h-9 icon-solid"></i>
@@ -130,7 +126,7 @@
                 </button>
             </div>
 
-            <div class="flex justify-between items-center px-1">
+            <div class="flex justify-between items-center px-1 pointer-events-auto">
                 <button class="text-white/70 hover:text-white active:scale-90 transition-transform">
                     <i data-lucide="monitor-speaker" class="w-5 h-5"></i>
                 </button>
@@ -150,24 +146,17 @@
         // Inicializar iconos de Lucide
         lucide.createIcons();
 
-        // Datos JSON inyectados por defecto (ya que no se adjuntaron en el prompt, uso datos de prueba sincronizados a tiempos irreales cortos para demostración)
+        // Array JSON de letras (se omite la clave "time" ya que el control es manual)
         const lyricsData = [
-            { time: 1.0, en: "I walk the lonely road", pron: "Ai wok de lonli roud", es: "Camino por el sendero solitario" },
-            { time: 5.5, en: "Under the neon lights tonight", pron: "Ander de nion laits tunait", es: "Bajo las luces de neón esta noche" },
-            { time: 10.0, en: "Shadows dancing on the wall", pron: "Shadous dansing on de wol", es: "Sombras bailando en la pared" },
-            { time: 14.2, en: "Waiting for your midnight call", pron: "Weiting for yor midnait col", es: "Esperando tu llamada de medianoche" },
-            { time: 19.0, en: "Oh, it's just a digital dream", pron: "Ou, its yast a diyital drim", es: "Oh, es solo un sueño digital" },
-            { time: 24.5, en: "Nothing is exactly what it seems", pron: "Nazing is exaktli wot it sims", es: "Nada es exactamente lo que parece" },
-            { time: 30.0, en: "Take my hand and pull me close", pron: "Teik mai jand and pul mi clos", es: "Toma mi mano y acércame" },
-            { time: 35.0, en: "You're the ghost I love the most", pron: "Yur de gost ai lov de most", es: "Eres el fantasma que más amo" }
+            { en: "I walk the lonely road", pron: "Ai wok de lonli roud", es: "Camino por el sendero solitario" },
+            { en: "Under the neon lights tonight", pron: "Ander de nion laits tunait", es: "Bajo las luces de neón esta noche" },
+            { en: "Shadows dancing on the wall", pron: "Shadous dansing on de wol", es: "Sombras bailando en la pared" },
+            { en: "Waiting for your midnight call", pron: "Weiting for yor midnait col", es: "Esperando tu llamada de medianoche" },
+            { en: "Oh, it's just a digital dream", pron: "Ou, its yast a diyital drim", es: "Oh, es solo un sueño digital" },
+            { en: "Nothing is exactly what it seems", pron: "Nazing is exaktli wot it sims", es: "Nada es exactamente lo que parece" },
+            { en: "Take my hand and pull me close", pron: "Teik mai jand and pul mi clos", es: "Toma mi mano y acércame" },
+            { en: "You're the ghost I love the most", pron: "Yur de gost ai lov de most", es: "Eres el fantasma que más amo" }
         ];
-
-        // Estado del Reproductor
-        let isPlaying = false;
-        let currentTime = 0;
-        let totalDuration = 40; // Duración total de prueba en segundos
-        let activeIndex = -1;
-        let intervalId = null;
 
         // Estados de Visibilidad
         let showPron = true;
@@ -175,127 +164,37 @@
 
         // Referencias DOM
         const container = document.getElementById('lyrics-container');
-        const playBtn = document.getElementById('play-btn');
-        const playIcon = document.getElementById('play-icon');
-        const pauseIcon = document.getElementById('pause-icon');
-        const progressBar = document.getElementById('progress-bar');
-        const progressContainer = document.getElementById('progress-container');
-        const currentTimeEl = document.getElementById('current-time');
-        const totalTimeEl = document.getElementById('total-time');
         const togglePronBtn = document.getElementById('toggle-pron');
         const toggleEspBtn = document.getElementById('toggle-esp');
 
-        // Formateador de tiempo (MM:SS)
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60);
-            const s = Math.floor(seconds % 60);
-            return `${m}:${s.toString().padStart(2, '0')}`;
-        }
-
-        totalTimeEl.textContent = formatTime(totalDuration);
-
-        // Renderizar letras dinámicamente
+        // Función para renderizar el HTML de las letras
         function renderLyrics() {
-            container.innerHTML = '<div id="spacer-top" class="h-10"></div>'; // Reset y margen superior
-
             lyricsData.forEach((lyric, index) => {
                 const block = document.createElement('div');
-                block.className = 'lyric-line inactive cursor-pointer py-1';
-                block.dataset.index = index;
+                // Todas inician inactivas
+                block.className = 'lyric-line inactive cursor-pointer py-2';
                 
                 block.innerHTML = `
                     <div class="text-[26px] font-bold text-white tracking-tight leading-tight mb-1 layer-en">${lyric.en}</div>
-                    <div class="text-[15px] italic text-white/50 layer-pron mb-1 ${showPron ? 'block' : 'hidden'}">${lyric.pron}</div>
-                    <div class="text-[16px] text-white/70 layer-es ${showEsp ? 'block' : 'hidden'}">${lyric.es}</div>
+                    <div class="text-[15px] italic text-white/50 layer-pron mb-1 transition-all duration-300 ${showPron ? 'block' : 'hidden'}">${lyric.pron}</div>
+                    <div class="text-[16px] text-white/70 layer-es transition-all duration-300 ${showEsp ? 'block' : 'hidden'}">${lyric.es}</div>
                 `;
 
-                // Interacción: Clic en letra
+                // Al hacer clic, hace scroll suave para centrar la letra en la pantalla
                 block.addEventListener('click', () => {
-                    currentTime = lyric.time;
-                    updatePlayerUI();
-                    syncLyrics();
-                    if(!isPlaying) togglePlay();
+                    block.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 });
 
                 container.appendChild(block);
             });
             
-            // Margen inferior gigante simulado por CSS
+            // Margen inferior gigante para asegurar que la última línea pueda llegar al centro
             const spacerBottom = document.createElement('div');
-            spacerBottom.className = 'h-52'; 
+            spacerBottom.className = 'h-[50vh]'; 
             container.appendChild(spacerBottom);
         }
 
-        // Actualizar barras y tiempos
-        function updatePlayerUI() {
-            const percentage = (currentTime / totalDuration) * 100;
-            progressBar.style.width = `${Math.min(percentage, 100)}%`;
-            currentTimeEl.textContent = formatTime(currentTime);
-        }
-
-        // Sincronizar clases y scroll
-        function syncLyrics() {
-            let newActiveIndex = -1;
-            for (let i = 0; i < lyricsData.length; i++) {
-                if (currentTime >= lyricsData[i].time) {
-                    newActiveIndex = i;
-                } else {
-                    break;
-                }
-            }
-
-            if (newActiveIndex !== activeIndex && newActiveIndex !== -1) {
-                // Remover clase activa del anterior
-                if (activeIndex !== -1) {
-                    const oldActive = container.children[activeIndex + 1]; // +1 por el spacer-top
-                    if(oldActive) {
-                        oldActive.classList.remove('active');
-                        oldActive.classList.add('inactive');
-                    }
-                }
-
-                // Asignar clase activa al nuevo
-                activeIndex = newActiveIndex;
-                const newActiveEl = container.children[activeIndex + 1];
-                if(newActiveEl) {
-                    newActiveEl.classList.remove('inactive');
-                    newActiveEl.classList.add('active');
-                    
-                    // Auto-Scroll Suave
-                    newActiveEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }
-        }
-
-        // Bucle del Motor Fake Audio
-        function loopTimer() {
-            if(currentTime >= totalDuration) {
-                togglePlay(); // Detener al finalizar
-                currentTime = totalDuration;
-                updatePlayerUI();
-                return;
-            }
-            currentTime += 0.1; // Sumar 100ms
-            updatePlayerUI();
-            syncLyrics();
-        }
-
-        // Alternar Reproducción
-        function togglePlay() {
-            isPlaying = !isPlaying;
-            if (isPlaying) {
-                playIcon.classList.add('hidden');
-                pauseIcon.classList.remove('hidden');
-                if(currentTime >= totalDuration) { currentTime = 0; activeIndex = -1; }
-                intervalId = setInterval(loopTimer, 100);
-            } else {
-                playIcon.classList.remove('hidden');
-                pauseIcon.classList.add('hidden');
-                clearInterval(intervalId);
-            }
-        }
-
-        // Lógica de Toggles
+        // Lógica de Toggles de Visibilidad
         function toggleLayerVisibility(layerClass, isVisible) {
             const elements = document.querySelectorAll(`.${layerClass}`);
             elements.forEach(el => {
@@ -315,12 +214,43 @@
             toggleLayerVisibility('layer-es', showEsp);
         });
 
-        // Interacción: Clic en barra de progreso
-        progressContainer.addEventListener('click', (e) => {
-            const rect = progressContainer.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const percentage = clickX / rect.width;
-            currentTime = percentage * totalDuration;
-            
-            updatePlayerUI();
-            syncLyrics();
+        // ==========================================
+        // MOTOR DE SEGUIMIENTO MANUAL (Intersection Observer)
+        // ==========================================
+        
+        function initManualScrollSync() {
+            // Configuramos el observador para que detecte cuando una letra pasa por el centro del contenedor
+            const observerOptions = {
+                root: container,
+                // El margen simula una línea horizontal imaginaria en el centro de la pantalla
+                rootMargin: '-40% 0px -40% 0px', 
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Desactivar todas las líneas
+                        document.querySelectorAll('.lyric-line').forEach(el => {
+                            el.classList.remove('active');
+                            el.classList.add('inactive');
+                        });
+                        
+                        // Activar la línea que está en el centro
+                        entry.target.classList.remove('inactive');
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, observerOptions);
+
+            // Observar todas las líneas renderizadas
+            document.querySelectorAll('.lyric-line').forEach(line => observer.observe(line));
+        }
+
+        // Inicializar la aplicación
+        renderLyrics();
+        initManualScrollSync();
+
+    </script>
+</body>
+</html>
