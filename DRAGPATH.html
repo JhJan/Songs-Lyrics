@@ -54,10 +54,8 @@
             <div id="spacer-top" class="h-10"></div>
         </main>
 
-        <!-- AUDIO REAL: IMPORTANTE -->
-        <!-- Sube tu archivo MP3 a la misma carpeta de GitHub que este HTML -->
-        <!-- Y asegúrate de que se llame exactamente 'DragPath-TwentyOnePilots.mp3' -->
-        <audio id="audio-player" src="DragPath-TwentyOnePilots.mp3"></audio>
+        <!-- AUDIO REAL: El nombre debe coincidir EXACTAMENTE con el archivo en tu GitHub -->
+        <audio id="audio-player" src="drag-path-digital-remains.mp3" preload="auto"></audio>
 
         <!-- Player Controls -->
         <footer class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-[#121212] to-transparent pt-24 pb-8 px-6 z-30">
@@ -112,7 +110,7 @@
     <script>
         lucide.createIcons();
 
-        // Letras sincronizadas con el audio proporcionado.
+        // Letras sincronizadas con el audio Drag Path - Digital Remains
         const lyricsData = [
             { time: 13.5, en: "When I see the devil's eyes", pron: "Wuen ai si de devils ais", es: "Cuando veo los ojos del diablo" },
             { time: 18.0, en: "A current travels down my spine", pron: "A corrent travels daun mai spain", es: "Un escalofrío recorre mi espalda" },
@@ -176,7 +174,7 @@
 
         let isPlaying = false;
         let currentTime = 0;
-        let totalDuration = 246; // Tiempo de la versión proporcionada
+        let totalDuration = 224; // Tiempo base estimado, se actualiza al cargar audio
         let activeIndex = -1;
         let showPron = true;
         let showEsp = true;
@@ -199,32 +197,33 @@
         audio.addEventListener('loadedmetadata', () => {
             totalDuration = audio.duration;
             totalTimeEl.textContent = formatTime(totalDuration);
+            // Restablecer estilos en caso de que hubiera un error previo
+            currentTimeEl.classList.remove('text-red-500', 'font-bold');
+            totalTimeEl.classList.remove('text-red-500', 'font-bold');
         });
 
-        // 2. MAGIA: Mientras suena, sincroniza todo milisegundo a milisegundo
+        // 2. Manejo visual de errores (Si no encuentra el MP3)
+        audio.addEventListener('error', () => {
+            console.error("No se pudo cargar el audio drag-path-digital-remains.mp3");
+            // Muestra error en la interfaz de forma sutil
+            currentTimeEl.textContent = "Error";
+            currentTimeEl.classList.add('text-red-500', 'font-bold');
+            totalTimeEl.textContent = "Sin Audio";
+            totalTimeEl.classList.add('text-red-500', 'font-bold');
+        });
+
+        // 3. MAGIA: Mientras suena el audio, sincroniza todo
         audio.addEventListener('timeupdate', () => {
             currentTime = audio.currentTime;
             updatePlayerUI();
             syncLyrics();
             
-            // Auto pausa al terminar
             if(audio.ended) {
                 isPlaying = false;
                 playIcon.classList.remove('hidden');
                 pauseIcon.classList.add('hidden');
             }
         });
-
-        // 3. Manejo de errores 
-        audio.addEventListener('error', () => {
-            console.error("No se pudo cargar el audio. Asegúrate de haber subido el MP3 a GitHub y que la ruta sea correcta.");
-            // Si falla el audio, mostramos alerta para que sepas qué pasó
-            if(!audio.src || audio.src === "" || audio.src.includes('DragPath-TwentyOnePilots.mp3')) {
-                // Silencio el error si estás en la vista previa del chat porque aquí no existe el mp3
-                if(window.location.hostname !== 'localhost' && !window.location.hostname.includes('githack')) return; 
-            }
-        });
-
 
         // ==== RENDERIZADO Y UI ====
         function renderLyrics() {
@@ -241,8 +240,11 @@
 
                 // Clic en la letra salta en el audio real
                 block.addEventListener('click', () => {
-                    audio.currentTime = lyric.time; 
-                    if(!isPlaying) togglePlay();
+                    // Solo salta si el audio se ha cargado correctamente
+                    if(!audio.error) {
+                        audio.currentTime = lyric.time; 
+                        if(!isPlaying) togglePlay();
+                    }
                 });
 
                 container.appendChild(block);
@@ -262,7 +264,10 @@
         function updatePlayerUI() {
             const percentage = (currentTime / totalDuration) * 100;
             progressBar.style.width = `${percentage}%`;
-            currentTimeEl.textContent = formatTime(currentTime);
+            // Evitar sobrescribir el texto de error si existe
+            if(!audio.error) {
+                currentTimeEl.textContent = formatTime(currentTime);
+            }
         }
 
         function syncLyrics() {
@@ -292,46 +297,29 @@
         }
 
         function togglePlay() {
-            // Verificación para evitar crasheos si el audio no se cargó
+            // Si hay error en el audio, no hace nada para que te des cuenta de que falta el archivo
             if(audio.error) {
-                console.warn("El audio no está disponible.");
-                // Si el audio falla, usamos un fallback de "simulación" solo para que la UI no se congele
-                fallbackPlaySimulation();
+                alert("El archivo de audio no se encuentra. Verifica que 'drag-path-digital-remains.mp3' esté subido a GitHub junto a este HTML.");
                 return;
             }
 
             isPlaying = !isPlaying;
             if (isPlaying) {
-                audio.play().catch(e => {
-                    console.error("Error reproduciendo:", e);
-                    isPlaying = false;
-                    // Fallback visual si el navegador bloquea el autoplay
-                    playIcon.classList.remove('hidden');
-                    pauseIcon.classList.add('hidden');
-                }); 
-                playIcon.classList.add('hidden');
-                pauseIcon.classList.remove('hidden');
+                let playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        playIcon.classList.add('hidden');
+                        pauseIcon.classList.remove('hidden');
+                    })
+                    .catch(e => {
+                        console.error("El navegador bloqueó el autoplay:", e);
+                        isPlaying = false;
+                    });
+                }
             } else {
                 audio.pause();
                 playIcon.classList.remove('hidden');
                 pauseIcon.classList.add('hidden');
-            }
-        }
-        
-        // Simulación temporal en caso de que pruebes el código sin tener el MP3 subido aún
-        let simulationInterval;
-        function fallbackPlaySimulation() {
-            isPlaying = !isPlaying;
-            if (isPlaying) {
-                playIcon.classList.add('hidden'); pauseIcon.classList.remove('hidden');
-                simulationInterval = setInterval(() => { 
-                    currentTime += 0.25; 
-                    if (currentTime >= totalDuration) { currentTime = totalDuration; fallbackPlaySimulation(); } 
-                    updatePlayerUI(); syncLyrics(); 
-                }, 250);
-            } else { 
-                playIcon.classList.remove('hidden'); pauseIcon.classList.add('hidden'); 
-                clearInterval(simulationInterval); 
             }
         }
 
@@ -345,18 +333,13 @@
         playBtn.addEventListener('click', togglePlay);
 
         progressContainer.addEventListener('click', (e) => {
+            if(audio.error) return; // Bloquear salto si no hay audio
             const rect = progressContainer.getBoundingClientRect();
             const clickX = e.clientX - rect.left;
-            
-            // Mover audio real o simulado
-            if(!audio.error) {
-                audio.currentTime = (clickX / rect.width) * totalDuration; 
-            } else {
-                currentTime = (clickX / rect.width) * totalDuration; 
-                updatePlayerUI(); syncLyrics();
-            }
+            audio.currentTime = (clickX / rect.width) * totalDuration; 
         });
 
+        // Inicializar vistas
         renderLyrics();
         updatePlayerUI();
         syncLyrics(); 
