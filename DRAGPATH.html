@@ -21,7 +21,12 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .lyric-line { transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out; transform-origin: left center; }
+        /* NUEVO: scroll-margin-top asegura que al hacer scroll al inicio de la línea, deje un espacio libre arriba */
+        .lyric-line { 
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out; 
+            transform-origin: left center; 
+            scroll-margin-top: 130px; 
+        }
         .lyric-line.active { opacity: 1 !important; transform: scale(1.02); }
         .lyric-line.inactive { opacity: 0.3; transform: scale(1); }
 
@@ -48,8 +53,8 @@
             <button class="p-2 -mr-2 text-white/80 hover:text-white active:scale-95 transition-transform"><i data-lucide="more-horizontal" class="w-7 h-7"></i></button>
         </header>
 
-        <main id="lyrics-container" class="flex-1 overflow-y-auto no-scrollbar px-6 pt-8 space-y-8 relative z-10 scroll-smooth scroll-pb-[300px]">
-            <div id="spacer-top" class="h-[30vh]"></div>
+        <main id="lyrics-container" class="flex-1 overflow-y-auto no-scrollbar px-6 pt-4 space-y-8 relative z-10 scroll-smooth pb-[450px]">
+            <div id="spacer-top" class="h-[10vh]"></div>
         </main>
 
         <footer class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-[#121212] to-transparent pt-24 pb-8 px-6 z-30 pointer-events-none">
@@ -121,7 +126,7 @@
             { time: 75.0, en: "'Cause proof is in the adversere", pron: "Coz pruf is in de adverser", es: "Porque la prueba está en el adversario" },
             { time: 79.5, en: "You found me", pron: "Yu faund mi", es: "Tú me encontraste" },
             
-            { time: 83.5, en: "A drag path etched in the surface", pron: "A drag paz echt in de sorfeis", es: "Un sendero de arrastre grabado en la superficie" },
+            { time: 83.5, sm: "A drag path etched in the surface", en: "A drag path etched in the surface", pron: "A drag paz echt in de sorfeis", es: "Un sendero de arrastre grabado en la superficie" },
             { time: 87.5, en: "As evidence, I left there on purpose", pron: "As evidens, ai left der on porpos", es: "Como evidencia, lo dejé ahí a propósito" },
             { time: 92.5, en: "A sad sack, laying on the surface", pron: "A sad sak, leiing on de sorfeis", es: "Un perdedor, tirado en la superficie" },
             { time: 97.0, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
@@ -182,16 +187,14 @@
                     <div class="text-[16px] text-white/70 layer-es transition-all duration-300 ${showEsp ? 'block' : 'hidden'}">${lyric.es}</div>
                 `;
 
+                // MODIFICADO: Ahora hace scroll alineando al inicio ('start') 
+                // pero respetando la propiedad CSS 'scroll-margin-top' para que quede arriba, pero centrado visualmente.
                 block.addEventListener('click', () => {
-                    block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    block.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 });
 
                 container.appendChild(block);
             });
-            
-            const spacerBottom = document.createElement('div');
-            spacerBottom.className = 'h-[60vh]'; 
-            container.appendChild(spacerBottom);
         }
 
         function updateLayersVisibility() {
@@ -205,9 +208,9 @@
         function initManualScrollSync() {
             const observerOptions = {
                 root: container,
-                // NUEVO: Movimos el margen de detección más arriba. 
-                // Ignora el 30% superior y el 50% inferior, detectando las letras en el espacio visible real.
-                rootMargin: '-30% 0px -50% 0px', 
+                // MODIFICADO: Estrecha el margen de detección arriba.
+                // -15% descarta el tope de la cabecera y -70% apaga las letras antes de llegar al reproductor inferior.
+                rootMargin: '-15% 0px -70% 0px', 
                 threshold: 0
             };
 
