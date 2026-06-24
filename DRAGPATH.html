@@ -56,8 +56,8 @@
 
         <!-- AUDIO REAL: IMPORTANTE -->
         <!-- Sube tu archivo MP3 a la misma carpeta de GitHub que este HTML -->
-        <!-- Y asegúrate de que se llame exactamente 'drag-path-digital-remains.mp3' -->
-        <audio id="audio-player" src="drag-path-digital-remains.mp3"></audio>
+        <!-- Y asegúrate de que se llame exactamente 'DragPath-TwentyOnePilots.mp3' -->
+        <audio id="audio-player" src="DragPath-TwentyOnePilots.mp3"></audio>
 
         <!-- Player Controls -->
         <footer class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-[#121212] to-transparent pt-24 pb-8 px-6 z-30">
@@ -65,6 +65,7 @@
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-4">
                     <div class="w-[56px] h-[56px] bg-[#B22518] rounded flex items-center justify-center shadow-md overflow-hidden relative">
+                        <!-- Imágen de portada cargada desde tu GitHub -->
                         <img src="drag-path-cover.jpg" alt="Drag Path Cover" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/A82417/000000?text=TOP'">
                     </div>
                     <div class="flex flex-col">
@@ -111,7 +112,7 @@
     <script>
         lucide.createIcons();
 
-        // Letras de la Versión Digital Remains estructuradas con tiempos de tu audio
+        // Letras sincronizadas con el audio proporcionado.
         const lyricsData = [
             { time: 13.5, en: "When I see the devil's eyes", pron: "Wuen ai si de devils ais", es: "Cuando veo los ojos del diablo" },
             { time: 18.0, en: "A current travels down my spine", pron: "A corrent travels daun mai spain", es: "Un escalofrío recorre mi espalda" },
@@ -143,29 +144,39 @@
             { time: 120.0, en: "Would you", pron: "Wud yu", es: "¿Lo harías?" },
             { time: 124.0, en: "(Would you, ooh)", pron: "(Wud yu, uu)", es: "(¿Lo harías, ooh?)" },
             { time: 128.5, en: "Please, please hurry", pron: "Plis, plis jarri", es: "Por favor, por favor, apúrate" },
-            { time: 133.5, en: "Can you, can you, can you, can you?", pron: "Can yu, can yu, can yu, can yu?", es: "¿Puedes, puedes, puedes, puedes?" },
+            { time: 138.0, en: "Would you", pron: "Wud yu", es: "¿Lo harías?" },
+            { time: 142.5, en: "(Would you, ooh)", pron: "(Wud yu, uu)", es: "(¿Lo harías, ooh?)" },
+            { time: 147.0, en: "Please, please hurry", pron: "Plis, plis jarri", es: "Por favor, por favor, apúrate" },
             
-            { time: 145.5, en: "A drag path, etched in the surface", pron: "A drag paz, echt in de sorfeis", es: "Un sendero de arrastre, grabado en la superficie" },
-            { time: 150.0, en: "As evidence, I left there on purpose", pron: "As evidens, ai left der on porpos", es: "Como evidencia, lo dejé ahí a propósito" },
-            { time: 154.5, en: "A sad sack, laying on the surface", pron: "A sad sak, leiing on de sorfeis", es: "Un perdedor, tirado en la superficie" },
-            { time: 159.0, en: "Can you, can you find me?", pron: "Can yu, can yu faind mi?", es: "¿Puedes, puedes encontrarme?" },
-            { time: 163.5, en: "I dug my heels into the gravel", pron: "Ai dag mai jils intu de gravel", es: "Clavé mis talones en la grava" },
-            { time: 167.5, en: "As evidence, for you to unravel", pron: "As evidens, for yu tu anravel", es: "Como evidencia, para que tú lo desenredes" },
-            { time: 172.5, en: "A drag path, etched in the surface", pron: "A drag paz, echt in de sorfeis", es: "Un sendero de arrastre, grabado en la superficie" },
-            { time: 177.0, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { time: 154.5, en: "Can you, can you, can you, can you?", pron: "Can yu, can yu, can yu, can yu?", es: "¿Puedes, puedes, puedes, puedes?" },
             
-            { time: 182.0, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
-            { time: 186.0, en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
-            { time: 191.0, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { time: 166.5, en: "A drag path, etched in the surface", pron: "A drag paz, echt in de sorfeis", es: "Un sendero de arrastre, grabado en la superficie" },
+            { time: 171.5, en: "As evidence, I left there on purpose", pron: "As evidens, ai left der on porpos", es: "Como evidencia, lo dejé ahí a propósito" },
+            { time: 176.0, en: "A sad sack, laying on the surface", pron: "A sad sak, leiing on de sorfeis", es: "Un perdedor, tirado en la superficie" },
+            { time: 180.5, en: "Can you, can you find me?", pron: "Can yu, can yu faind mi?", es: "¿Puedes, puedes encontrarme?" },
+            { time: 183.0, en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            { time: 185.0, en: "I dug my heels into the gravel", pron: "Ai dag mai jils intu de gravel", es: "Clavé mis talones en la grava" },
+            { time: 189.5, en: "As evidence, for you to unravel", pron: "As evidens, for yu tu anravel", es: "Como evidencia, para que tú lo desenredes" },
+            { time: 194.5, en: "A drag path, etched in the surface", pron: "A drag paz, echt in de sorfeis", es: "Un sendero de arrastre, grabado en la superficie" },
+            { time: 199.0, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
             
-            { time: 206.5, en: "Then the Sun begins to rise", pron: "Den de san biguins tu rais", es: "Entonces el sol comienza a salir" },
-            { time: 211.0, en: "We made it through the darkest night", pron: "Wi meid it zru de darkest nait", es: "Lo logramos a través de la noche más oscura" },
-            { time: 215.5, en: "You found me", pron: "Yu faund mi", es: "Tú me encontraste" }
+            { time: 204.0, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { time: 206.0, en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            { time: 208.5, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { time: 210.5, en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            { time: 213.0, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { time: 215.5, en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            { time: 217.5, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { time: 220.0, en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            
+            { time: 227.0, en: "Then the Sun begins to rise", pron: "Den de san biguins tu rais", es: "Entonces el sol comienza a salir" },
+            { time: 231.5, en: "We made it through the darkest night", pron: "Wi meid it zru de darkest nait", es: "Lo logramos a través de la noche más oscura" },
+            { time: 236.0, en: "You found me", pron: "Yu faund mi", es: "Tú me encontraste" }
         ];
 
         let isPlaying = false;
         let currentTime = 0;
-        let totalDuration = 236; // Tiempo de la versión Digital Remains
+        let totalDuration = 246; // Tiempo de la versión proporcionada
         let activeIndex = -1;
         let showPron = true;
         let showEsp = true;
@@ -208,7 +219,7 @@
         audio.addEventListener('error', () => {
             console.error("No se pudo cargar el audio. Asegúrate de haber subido el MP3 a GitHub y que la ruta sea correcta.");
             // Si falla el audio, mostramos alerta para que sepas qué pasó
-            if(!audio.src || audio.src === "" || audio.src.includes('drag-path-digital-remains.mp3')) {
+            if(!audio.src || audio.src === "" || audio.src.includes('DragPath-TwentyOnePilots.mp3')) {
                 // Silencio el error si estás en la vista previa del chat porque aquí no existe el mp3
                 if(window.location.hostname !== 'localhost' && !window.location.hostname.includes('githack')) return; 
             }
