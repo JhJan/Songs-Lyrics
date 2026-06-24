@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Spotify Premium UI - Manual Scroll Observer</title>
+    <title>Drag Path - Spotify Premium UI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -18,43 +18,18 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Ocultar barra de desplazamiento manteniendo funcionalidad */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Gradiente de fondo (Color Base Dominante: Azul Rey) */
-        .bg-spotify-gradient { 
-            background: linear-gradient(180deg, #1E3A8A 0%, #0F172A 40%, #121212 100%); 
-        }
+        .lyric-line { transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out; transform-origin: left center; }
+        .lyric-line.active { opacity: 1 !important; transform: scale(1.02); }
+        .lyric-line.inactive { opacity: 0.3; transform: scale(1); }
 
-        /* Animaciones para las letras según requisitos estrictos */
-        .lyric-line { 
-            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out; 
-            transform-origin: left center; 
-        }
-        .lyric-line.active { 
-            opacity: 1 !important; 
-            transform: scale(1.02); 
-        }
-        .lyric-line.inactive { 
-            opacity: 0.3; 
-            transform: scale(1); 
-        }
+        .toggle-btn.active { background-color: rgba(255, 255, 255, 0.2); color: white; border-color: transparent; }
+        .toggle-btn { background-color: transparent; color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.3); }
 
-        /* Estilos de botones Toggles (Nativos y Elegantes) */
-        .toggle-btn { 
-            background-color: transparent; 
-            color: rgba(255, 255, 255, 0.5); 
-            border: 1px solid rgba(255, 255, 255, 0.3); 
-            transition: all 0.2s;
-        }
-        .toggle-btn.active { 
-            background-color: rgba(255, 255, 255, 0.2); 
-            color: #ffffff; 
-            border-color: transparent; 
-        }
-
-        /* Utilidad para iconos rellenos */
+        /* Mantenemos tu color base rojo */
+        .bg-spotify-gradient { background: linear-gradient(180deg, #A82417 0%, #68170D 40%, #121212 100%); }
         .icon-solid { fill: currentColor; stroke: currentColor; }
     </style>
 </head>
@@ -62,117 +37,154 @@
 
     <div class="relative w-full max-w-[400px] h-[100dvh] sm:h-[850px] sm:rounded-[40px] overflow-hidden bg-spotify-gradient shadow-2xl flex flex-col">
         
+        <!-- Header -->
         <header class="flex items-center justify-between px-6 pt-12 pb-4 relative z-20">
-            <button class="p-2 -ml-2 text-white/80 hover:text-white active:scale-95 transition-transform">
-                <i data-lucide="chevron-down" class="w-7 h-7"></i>
-            </button>
+            <button class="p-2 -ml-2 text-white/80 hover:text-white active:scale-95 transition-transform"><i data-lucide="chevron-down" class="w-7 h-7"></i></button>
             <div class="flex flex-col items-center">
                 <span class="text-xs font-bold tracking-widest text-white/80 uppercase">Letras</span>
-                <div class="flex items-center gap-2 mt-2">
-                    <button id="toggle-pron" class="toggle-btn active px-3 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider">Pron</button>
-                    <button id="toggle-esp" class="toggle-btn active px-3 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider">Esp</button>
+                <div class="flex items-center gap-2 mt-1">
+                    <button id="toggle-pron" class="toggle-btn active px-3 py-1 text-[10px] font-bold rounded-full transition-colors uppercase tracking-wider">Pron</button>
+                    <button id="toggle-esp" class="toggle-btn active px-3 py-1 text-[10px] font-bold rounded-full transition-colors uppercase tracking-wider">Esp</button>
                 </div>
             </div>
-            <button class="p-2 -mr-2 text-white/80 hover:text-white active:scale-95 transition-transform">
-                <i data-lucide="more-horizontal" class="w-7 h-7"></i>
-            </button>
+            <button class="p-2 -mr-2 text-white/80 hover:text-white active:scale-95 transition-transform"><i data-lucide="more-horizontal" class="w-7 h-7"></i></button>
         </header>
 
+        <!-- Lyrics Container -->
         <main id="lyrics-container" class="flex-1 overflow-y-auto no-scrollbar px-6 pb-72 pt-8 space-y-8 relative z-10 scroll-smooth">
-            <div id="spacer-top" class="h-[30vh]"></div> </main>
+            <div id="spacer-top" class="h-[30vh]"></div> <!-- Espaciador para centrar la primera letra -->
+            <!-- Las letras se inyectan dinámicamente aquí -->
+        </main>
 
+        <!-- Player Controls -->
+        <!-- Se añade pointer-events-none al footer general para que el scroll funcione debajo del difuminado negro, pero los botones internos tienen pointer-events-auto -->
         <footer class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-[#121212] to-transparent pt-24 pb-8 px-6 z-30 pointer-events-none">
             
             <div class="flex items-center justify-between mb-6 pointer-events-auto">
                 <div class="flex items-center gap-4">
-                    <div class="w-[56px] h-[56px] bg-[#1E3A8A] rounded flex items-center justify-center shadow-md overflow-hidden relative">
-                        <i data-lucide="music" class="w-8 h-8 text-white/50"></i>
+                    <div class="w-[56px] h-[56px] bg-[#B22518] rounded flex items-center justify-center shadow-md overflow-hidden relative">
+                        <!-- Imágen de portada cargada desde tu GitHub -->
+                        <img src="drag-path-cover.jpg" alt="Drag Path Cover" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/A82417/000000?text=TOP'">
                     </div>
-                    <div class="flex flex-col w-[160px]">
-                        <h2 class="text-[20px] font-bold text-white leading-tight tracking-tight truncate">Midnight Echoes</h2>
-                        <p class="text-[15px] text-white/70 font-medium mt-0.5 truncate">Synthwave Boy</p>
+                    <div class="flex flex-col">
+                        <h2 class="text-[20px] font-bold text-white leading-tight tracking-tight">Drag Path</h2>
+                        <p class="text-[15px] text-white/70 font-medium mt-0.5">Twenty One Pilots</p>
                     </div>
                 </div>
-                <button class="w-6 h-6 rounded-full bg-[#1ED760] flex items-center justify-center text-black active:scale-95 transition-transform hover:scale-105">
-                    <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
-                </button>
+                <button class="w-6 h-6 rounded-full bg-[#1ED760] flex items-center justify-center text-black active:scale-95 transition-transform hover:scale-105"><i data-lucide="check" class="w-4 h-4 stroke-[3]"></i></button>
             </div>
 
+            <!-- Progress Bar (Visual estática) -->
             <div class="space-y-1.5 mb-6 pointer-events-auto">
-                <div class="w-full h-1.5 bg-white/20 rounded-full relative">
-                    <div class="h-full bg-white rounded-full w-0 relative"></div>
+                <div id="progress-container" class="w-full h-1 bg-white/20 rounded-full relative group">
+                    <div id="progress-bar" class="h-full bg-white rounded-full w-0 relative transition-all duration-75">
+                        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md"></div>
+                    </div>
                 </div>
                 <div class="flex justify-between text-[11px] font-medium text-white/60 tracking-wide font-mono">
-                    <span>--:--</span>
-                    <span>--:--</span>
+                    <span id="current-time">--:--</span>
+                    <span id="total-time">3:44</span>
                 </div>
             </div>
 
-            <div class="flex items-center justify-between mb-6 px-1 pointer-events-auto">
-                <button class="text-[#1ED760] active:scale-90 transition-transform">
-                    <i data-lucide="shuffle" class="w-[22px] h-[22px] stroke-[2.5]"></i>
+            <div class="flex items-center justify-between mb-6 px-1 pointer-events-auto opacity-80">
+                <button class="text-[#1ED760] active:scale-90 transition-transform"><i data-lucide="shuffle" class="w-[22px] h-[22px] stroke-[2.5]"></i></button>
+                <button class="text-white active:scale-90 transition-transform"><i data-lucide="skip-back" class="w-9 h-9 icon-solid"></i></button>
+                <button id="play-btn" class="w-[64px] h-[64px] flex items-center justify-center bg-white rounded-full text-black hover:scale-105 active:scale-95 transition-transform shadow-xl">
+                    <i data-lucide="play" id="play-icon" class="w-8 h-8 ml-1 icon-solid"></i><i data-lucide="pause" id="pause-icon" class="w-8 h-8 hidden icon-solid"></i>
                 </button>
-                <button class="text-white active:scale-90 transition-transform">
-                    <i data-lucide="skip-back" class="w-9 h-9 icon-solid"></i>
-                </button>
-                <button class="w-[64px] h-[64px] flex items-center justify-center bg-white rounded-full text-black hover:scale-105 active:scale-95 transition-transform shadow-xl">
-                    <i data-lucide="play" class="w-8 h-8 ml-1 icon-solid"></i>
-                </button>
-                <button class="text-white active:scale-90 transition-transform">
-                    <i data-lucide="skip-forward" class="w-9 h-9 icon-solid"></i>
-                </button>
-                <button class="text-white/70 hover:text-white active:scale-90 transition-transform">
-                    <i data-lucide="timer" class="w-6 h-6"></i>
-                </button>
+                <button class="text-white active:scale-90 transition-transform"><i data-lucide="skip-forward" class="w-9 h-9 icon-solid"></i></button>
+                <button class="text-white/70 hover:text-white active:scale-90 transition-transform"><i data-lucide="timer" class="w-6 h-6"></i></button>
             </div>
 
             <div class="flex justify-between items-center px-1 pointer-events-auto">
-                <button class="text-white/70 hover:text-white active:scale-90 transition-transform">
-                    <i data-lucide="monitor-speaker" class="w-5 h-5"></i>
-                </button>
+                <button class="text-white/70 hover:text-white active:scale-90 transition-transform"><i data-lucide="monitor-speaker" class="w-5 h-5"></i></button>
                 <div class="flex gap-6">
-                    <button class="text-white/70 hover:text-white active:scale-90 transition-transform">
-                        <i data-lucide="share-2" class="w-5 h-5"></i>
-                    </button>
-                    <button class="text-white/70 hover:text-white active:scale-90 transition-transform">
-                        <i data-lucide="list-music" class="w-5 h-5"></i>
-                    </button>
+                    <button class="text-white/70 hover:text-white active:scale-90 transition-transform"><i data-lucide="share-2" class="w-5 h-5"></i></button>
+                    <button class="text-white/70 hover:text-white active:scale-90 transition-transform"><i data-lucide="list-music" class="w-5 h-5"></i></button>
                 </div>
             </div>
         </footer>
     </div>
 
     <script>
-        // Inicializar iconos de Lucide
         lucide.createIcons();
 
-        // Array JSON de letras (se omite la clave "time" ya que el control es manual)
+        // Tus letras originales intactas (el tiempo se ignora ahora, pero lo conservo por si te sirve después)
         const lyricsData = [
-            { en: "I walk the lonely road", pron: "Ai wok de lonli roud", es: "Camino por el sendero solitario" },
-            { en: "Under the neon lights tonight", pron: "Ander de nion laits tunait", es: "Bajo las luces de neón esta noche" },
-            { en: "Shadows dancing on the wall", pron: "Shadous dansing on de wol", es: "Sombras bailando en la pared" },
-            { en: "Waiting for your midnight call", pron: "Weiting for yor midnait col", es: "Esperando tu llamada de medianoche" },
-            { en: "Oh, it's just a digital dream", pron: "Ou, its yast a diyital drim", es: "Oh, es solo un sueño digital" },
-            { en: "Nothing is exactly what it seems", pron: "Nazing is exaktli wot it sims", es: "Nada es exactamente lo que parece" },
-            { en: "Take my hand and pull me close", pron: "Teik mai jand and pul mi clos", es: "Toma mi mano y acércame" },
-            { en: "You're the ghost I love the most", pron: "Yur de gost ai lov de most", es: "Eres el fantasma que más amo" }
+            { time: 13.5, en: "When I see the devil's eyes", pron: "Wuen ai si de devils ais", es: "Cuando veo los ojos del diablo" },
+            { time: 18.0, en: "A current travels down my spine", pron: "A corrent travels daun mai spain", es: "Un escalofrío recorre mi espalda" },
+            { time: 22.0, en: "He found me", pron: "Ji faund mi", es: "Él me encontró" },
+            { time: 27.5, en: "Seems as though I've lost again", pron: "Sims as dou aiv lost aguen", es: "Parece que he perdido otra vez" },
+            { time: 32.0, en: "A story told ad nauseam", pron: "A stori told ad nosiam", es: "Una historia contada hasta el hartazgo" },
+            { time: 36.0, en: "He found me", pron: "Ji faund mi", es: "Él me encontró" },
+            { time: 41.5, en: "Maybe once or twice or three", pron: "Meibi uans or tuais or zri", es: "Quizás una o dos o tres" },
+            { time: 45.0, en: "He's tried his hand at drowning me", pron: "Jis traid jis jand at drauning mi", es: "Ha intentado ahogarme" },
+            { time: 48.5, en: "But I'm still on fire", pron: "Bat aim stil on faiar", es: "Pero sigo en llamas" },
+            { time: 52.0, en: "At least I'm pretty sure", pron: "At list aim priti shur", es: "Al menos estoy bastante seguro" },
+            
+            { time: 57.5, en: "When I see the devil's eyes", pron: "Wuen ai si de devils ais", es: "Cuando veo los ojos del diablo" },
+            { time: 61.5, en: "I'll look away and smile wide", pron: "Ail luk auei and smail uaid", es: "Desviaré la mirada y sonreiré ampliamente" },
+            { time: 66.0, en: "You found me", pron: "Yu faund mi", es: "Tú me encontraste" },
+            { time: 71.0, en: "'Cause then I'll know you're also there", pron: "Coz den ail no yur olso der", es: "Porque entonces sabré que tú también estás ahí" },
+            { time: 75.0, en: "'Cause proof is in the adversere", pron: "Coz pruf is in de adverser", es: "Porque la prueba está en el adversario" },
+            { time: 79.5, en: "You found me", pron: "Yu faund mi", es: "Tú me encontraste" },
+            
+            { time: 83.5, en: "A drag path etched in the surface", pron: "A drag paz echt in de sorfeis", es: "Un sendero de arrastre grabado en la superficie" },
+            { time: 87.5, en: "As evidence, I left there on purpose", pron: "As evidens, ai left der on porpos", es: "Como evidencia, lo dejé ahí a propósito" },
+            { time: 92.5, en: "A sad sack, laying on the surface", pron: "A sad sak, leiing on de sorfeis", es: "Un perdedor, tirado en la superficie" },
+            { time: 97.0, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { time: 101.5, en: "I dug my heels into the gravel", pron: "Ai dag mai jils intu de gravel", es: "Clavé mis talones en la grava" },
+            { time: 105.0, en: "As evidence, for you to unravel", pron: "As evidens, for yu tu anravel", es: "Como evidencia, para que tú lo desenredes" },
+            { time: 110.0, en: "A drag path, etched in the surface", pron: "A drag paz, echt in de sorfeis", es: "Un sendero de arrastre, grabado en la superficie" },
+            { time: 114.5, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            
+            { time: 120.0, en: "Would you", pron: "Wud yu", es: "¿Lo harías?" },
+            { time: 124.0, en: "(Would you, ooh)", pron: "(Wud yu, uu)", es: "(¿Lo harías, ooh?)" },
+            { time: 128.5, en: "Please, please hurry", pron: "Plis, plis jarri", es: "Por favor, por favor, apúrate" },
+            { time: 138.0, en: "Would you", pron: "Wud yu", es: "¿Lo harías?" },
+            { time: 142.5, en: "(Would you, ooh)", pron: "(Wud yu, uu)", es: "(¿Lo harías, ooh?)" },
+            { time: 147.0, en: "Please, please hurry", pron: "Plis, plis jarri", es: "Por favor, por favor, apúrate" },
+            
+            { time: 154.5, en: "Can you, can you, can you, can you?", pron: "Can yu, can yu, can yu, can yu?", es: "¿Puedes, puedes, puedes, puedes?" },
+            
+            { time: 166.5, en: "A drag path, etched in the surface", pron: "A drag paz, echt in de sorfeis", es: "Un sendero de arrastre, grabado en la superficie" },
+            { time: 171.5, en: "As evidence, I left there on purpose", pron: "As evidens, ai left der on porpos", es: "Como evidencia, lo dejé ahí a propósito" },
+            { time: 176.0, en: "A sad sack, laying on the surface", pron: "A sad sak, leiing on de sorfeis", es: "Un perdedor, tirado en la superficie" },
+            { time: 180.5, en: "Can you, can you find me?", pron: "Can yu, can yu faind mi?", es: "¿Puedes, puedes encontrarme?" },
+            { time: 183.0, en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            { time: 185.0, en: "I dug my heels into the gravel", pron: "Ai dag mai jils intu de gravel", es: "Clavé mis talones en la grava" },
+            { time: 189.5, en: "As evidence, for you to unravel", pron: "As evidens, for yu tu anravel", es: "Como evidencia, para que tú lo desenredes" },
+            { time: 194.5, en: "A drag path, etched in the surface", pron: "A drag paz, echt in de sorfeis", es: "Un sendero de arrastre, grabado en la superficie" },
+            { time: 199.0, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            
+            { time: 204.0, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { time: 206.0, en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            { time: 208.5, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { time: 210.5, en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            { time: 213.0, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { time: 215.5, en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            { time: 217.5, en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { time: 220.0, en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            
+            { time: 227.0, en: "Then the Sun begins to rise", pron: "Den de san biguins tu rais", es: "Entonces el sol comienza a salir" },
+            { time: 231.5, en: "We made it through the darkest night", pron: "Wi meid it zru de darkest nait", es: "Lo logramos a través de la noche más oscura" },
+            { time: 236.0, en: "You found me", pron: "Yu faund mi", es: "Tú me encontraste" }
         ];
 
-        // Estados de Visibilidad
         let showPron = true;
         let showEsp = true;
 
-        // Referencias DOM
         const container = document.getElementById('lyrics-container');
         const togglePronBtn = document.getElementById('toggle-pron');
         const toggleEspBtn = document.getElementById('toggle-esp');
 
-        // Función para renderizar el HTML de las letras
+        // ==== RENDERIZADO ====
         function renderLyrics() {
             lyricsData.forEach((lyric, index) => {
                 const block = document.createElement('div');
-                // Todas inician inactivas
-                block.className = 'lyric-line inactive cursor-pointer py-2';
+                block.className = 'lyric-line inactive cursor-pointer py-1';
+                block.dataset.index = index;
                 
                 block.innerHTML = `
                     <div class="text-[26px] font-bold text-white tracking-tight leading-tight mb-1 layer-en">${lyric.en}</div>
@@ -180,7 +192,7 @@
                     <div class="text-[16px] text-white/70 layer-es transition-all duration-300 ${showEsp ? 'block' : 'hidden'}">${lyric.es}</div>
                 `;
 
-                // Al hacer clic, hace scroll suave para centrar la letra en la pantalla
+                // Al hacer clic, centra la línea suavemente
                 block.addEventListener('click', () => {
                     block.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 });
@@ -188,41 +200,26 @@
                 container.appendChild(block);
             });
             
-            // Margen inferior gigante para asegurar que la última línea pueda llegar al centro
+            // Espacio al final para que la última letra pueda llegar al centro
             const spacerBottom = document.createElement('div');
             spacerBottom.className = 'h-[50vh]'; 
             container.appendChild(spacerBottom);
         }
 
-        // Lógica de Toggles de Visibilidad
-        function toggleLayerVisibility(layerClass, isVisible) {
-            const elements = document.querySelectorAll(`.${layerClass}`);
-            elements.forEach(el => {
-                el.style.display = isVisible ? 'block' : 'none';
-            });
+        // ==== TOGGLES DE IDIOMA ====
+        function updateLayersVisibility() {
+            document.querySelectorAll('.layer-pron').forEach(el => el.style.display = showPron ? 'block' : 'none');
+            document.querySelectorAll('.layer-es').forEach(el => el.style.display = showEsp ? 'block' : 'none');
         }
 
-        togglePronBtn.addEventListener('click', () => {
-            showPron = !showPron;
-            togglePronBtn.classList.toggle('active');
-            toggleLayerVisibility('layer-pron', showPron);
-        });
+        togglePronBtn.addEventListener('click', () => { showPron = !showPron; togglePronBtn.classList.toggle('active'); updateLayersVisibility(); });
+        toggleEspBtn.addEventListener('click', () => { showEsp = !showEsp; toggleEspBtn.classList.toggle('active'); updateLayersVisibility(); });
 
-        toggleEspBtn.addEventListener('click', () => {
-            showEsp = !showEsp;
-            toggleEspBtn.classList.toggle('active');
-            toggleLayerVisibility('layer-es', showEsp);
-        });
-
-        // ==========================================
-        // MOTOR DE SEGUIMIENTO MANUAL (Intersection Observer)
-        // ==========================================
-        
+        // ==== MOTOR DE SEGUIMIENTO MANUAL ====
         function initManualScrollSync() {
-            // Configuramos el observador para que detecte cuando una letra pasa por el centro del contenedor
             const observerOptions = {
                 root: container,
-                // El margen simula una línea horizontal imaginaria en el centro de la pantalla
+                // Define la zona central de activación (ignora el 40% superior y el 40% inferior de la pantalla)
                 rootMargin: '-40% 0px -40% 0px', 
                 threshold: 0
             };
@@ -230,27 +227,25 @@
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        // Desactivar todas las líneas
+                        // Apaga todas las líneas
                         document.querySelectorAll('.lyric-line').forEach(el => {
                             el.classList.remove('active');
                             el.classList.add('inactive');
                         });
                         
-                        // Activar la línea que está en el centro
+                        // Enciende la línea en el centro
                         entry.target.classList.remove('inactive');
                         entry.target.classList.add('active');
                     }
                 });
             }, observerOptions);
 
-            // Observar todas las líneas renderizadas
             document.querySelectorAll('.lyric-line').forEach(line => observer.observe(line));
         }
 
-        // Inicializar la aplicación
+        // Inicializar vistas
         renderLyrics();
-        initManualScrollSync();
-
+        initManualScrollSync(); 
     </script>
 </body>
 </html>
