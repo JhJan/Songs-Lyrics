@@ -28,7 +28,6 @@
         .toggle-btn.active { background-color: rgba(255, 255, 255, 0.2); color: white; border-color: transparent; }
         .toggle-btn { background-color: transparent; color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.3); }
 
-        /* Mantenemos tu color base rojo */
         .bg-spotify-gradient { background: linear-gradient(180deg, #A82417 0%, #68170D 40%, #121212 100%); }
         .icon-solid { fill: currentColor; stroke: currentColor; }
     </style>
@@ -37,7 +36,6 @@
 
     <div class="relative w-full max-w-[400px] h-[100dvh] sm:h-[850px] sm:rounded-[40px] overflow-hidden bg-spotify-gradient shadow-2xl flex flex-col">
         
-        <!-- Header -->
         <header class="flex items-center justify-between px-6 pt-12 pb-4 relative z-20">
             <button class="p-2 -ml-2 text-white/80 hover:text-white active:scale-95 transition-transform"><i data-lucide="chevron-down" class="w-7 h-7"></i></button>
             <div class="flex flex-col items-center">
@@ -50,20 +48,15 @@
             <button class="p-2 -mr-2 text-white/80 hover:text-white active:scale-95 transition-transform"><i data-lucide="more-horizontal" class="w-7 h-7"></i></button>
         </header>
 
-        <!-- Lyrics Container -->
-        <main id="lyrics-container" class="flex-1 overflow-y-auto no-scrollbar px-6 pb-72 pt-8 space-y-8 relative z-10 scroll-smooth">
-            <div id="spacer-top" class="h-[30vh]"></div> <!-- Espaciador para centrar la primera letra -->
-            <!-- Las letras se inyectan dinámicamente aquí -->
+        <main id="lyrics-container" class="flex-1 overflow-y-auto no-scrollbar px-6 pt-8 space-y-8 relative z-10 scroll-smooth scroll-pb-[300px]">
+            <div id="spacer-top" class="h-[30vh]"></div>
         </main>
 
-        <!-- Player Controls -->
-        <!-- Se añade pointer-events-none al footer general para que el scroll funcione debajo del difuminado negro, pero los botones internos tienen pointer-events-auto -->
         <footer class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-[#121212] to-transparent pt-24 pb-8 px-6 z-30 pointer-events-none">
             
             <div class="flex items-center justify-between mb-6 pointer-events-auto">
                 <div class="flex items-center gap-4">
                     <div class="w-[56px] h-[56px] bg-[#B22518] rounded flex items-center justify-center shadow-md overflow-hidden relative">
-                        <!-- Imágen de portada cargada desde tu GitHub -->
                         <img src="drag-path-cover.jpg" alt="Drag Path Cover" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/A82417/000000?text=TOP'">
                     </div>
                     <div class="flex flex-col">
@@ -74,7 +67,6 @@
                 <button class="w-6 h-6 rounded-full bg-[#1ED760] flex items-center justify-center text-black active:scale-95 transition-transform hover:scale-105"><i data-lucide="check" class="w-4 h-4 stroke-[3]"></i></button>
             </div>
 
-            <!-- Progress Bar (Visual estática) -->
             <div class="space-y-1.5 mb-6 pointer-events-auto">
                 <div id="progress-container" class="w-full h-1 bg-white/20 rounded-full relative group">
                     <div id="progress-bar" class="h-full bg-white rounded-full w-0 relative transition-all duration-75">
@@ -110,7 +102,6 @@
     <script>
         lucide.createIcons();
 
-        // Tus letras originales intactas (el tiempo se ignora ahora, pero lo conservo por si te sirve después)
         const lyricsData = [
             { time: 13.5, en: "When I see the devil's eyes", pron: "Wuen ai si de devils ais", es: "Cuando veo los ojos del diablo" },
             { time: 18.0, en: "A current travels down my spine", pron: "A corrent travels daun mai spain", es: "Un escalofrío recorre mi espalda" },
@@ -179,7 +170,6 @@
         const togglePronBtn = document.getElementById('toggle-pron');
         const toggleEspBtn = document.getElementById('toggle-esp');
 
-        // ==== RENDERIZADO ====
         function renderLyrics() {
             lyricsData.forEach((lyric, index) => {
                 const block = document.createElement('div');
@@ -192,7 +182,6 @@
                     <div class="text-[16px] text-white/70 layer-es transition-all duration-300 ${showEsp ? 'block' : 'hidden'}">${lyric.es}</div>
                 `;
 
-                // Al hacer clic, centra la línea suavemente
                 block.addEventListener('click', () => {
                     block.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 });
@@ -200,13 +189,11 @@
                 container.appendChild(block);
             });
             
-            // Espacio al final para que la última letra pueda llegar al centro
             const spacerBottom = document.createElement('div');
-            spacerBottom.className = 'h-[50vh]'; 
+            spacerBottom.className = 'h-[60vh]'; 
             container.appendChild(spacerBottom);
         }
 
-        // ==== TOGGLES DE IDIOMA ====
         function updateLayersVisibility() {
             document.querySelectorAll('.layer-pron').forEach(el => el.style.display = showPron ? 'block' : 'none');
             document.querySelectorAll('.layer-es').forEach(el => el.style.display = showEsp ? 'block' : 'none');
@@ -215,25 +202,23 @@
         togglePronBtn.addEventListener('click', () => { showPron = !showPron; togglePronBtn.classList.toggle('active'); updateLayersVisibility(); });
         toggleEspBtn.addEventListener('click', () => { showEsp = !showEsp; toggleEspBtn.classList.toggle('active'); updateLayersVisibility(); });
 
-        // ==== MOTOR DE SEGUIMIENTO MANUAL ====
         function initManualScrollSync() {
             const observerOptions = {
                 root: container,
-                // Define la zona central de activación (ignora el 40% superior y el 40% inferior de la pantalla)
-                rootMargin: '-40% 0px -40% 0px', 
+                // NUEVO: Movimos el margen de detección más arriba. 
+                // Ignora el 30% superior y el 50% inferior, detectando las letras en el espacio visible real.
+                rootMargin: '-30% 0px -50% 0px', 
                 threshold: 0
             };
 
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        // Apaga todas las líneas
                         document.querySelectorAll('.lyric-line').forEach(el => {
                             el.classList.remove('active');
                             el.classList.add('inactive');
                         });
                         
-                        // Enciende la línea en el centro
                         entry.target.classList.remove('inactive');
                         entry.target.classList.add('active');
                     }
@@ -243,7 +228,6 @@
             document.querySelectorAll('.lyric-line').forEach(line => observer.observe(line));
         }
 
-        // Inicializar vistas
         renderLyrics();
         initManualScrollSync(); 
     </script>
