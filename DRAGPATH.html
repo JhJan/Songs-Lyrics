@@ -2,104 +2,210 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drag Path - Manual Lyrics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Drag Path - Spotify Premium UI (Manual Scroll)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #000; color: #fff; overflow: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .lyric-line { opacity: 0.3; transition: all 0.4s ease; transform: scale(1); cursor: pointer; }
-        .lyric-line.active { opacity: 1 !important; transform: scale(1.05); color: #fff; }
-        .bg-spotify-gradient { background: linear-gradient(180deg, #A82417 0%, #121212 100%); }
-        .toggle-btn.active { background-color: rgba(255, 255, 255, 0.2); border-color: transparent; }
-        .toggle-btn { background: transparent; border: 1px solid rgba(255, 255, 255, 0.3); }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Ahora todas las líneas son completamente visibles para lectura manual */
+        .lyric-line { transition: opacity 0.4s ease-in-out; opacity: 1; }
+
+        .toggle-btn.active { background-color: rgba(255, 255, 255, 0.2); color: white; border-color: transparent; }
+        .toggle-btn { background-color: transparent; color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.3); }
+
+        .bg-spotify-gradient { background: linear-gradient(180deg, #A82417 0%, #68170D 40%, #121212 100%); }
+        .icon-solid { fill: currentColor; stroke: currentColor; }
     </style>
 </head>
-<body class="flex items-center justify-center h-screen">
+<body class="flex items-center justify-center min-h-screen bg-black">
 
-    <div class="relative w-[400px] h-[800px] bg-spotify-gradient rounded-3xl overflow-hidden flex flex-col shadow-2xl">
-        <!-- Header -->
-        <div class="p-6 pt-12 flex justify-between items-center z-10">
-            <span class="text-xs font-bold tracking-widest uppercase">Letras</span>
-            <div class="flex gap-2">
-                <button id="toggle-pron" class="toggle-btn active px-3 py-1 text-[10px] font-bold rounded-full uppercase">PRON</button>
-                <button id="toggle-esp" class="toggle-btn active px-3 py-1 text-[10px] font-bold rounded-full uppercase">ESP</button>
+    <div class="relative w-full max-w-[400px] h-[100dvh] sm:h-[850px] sm:rounded-[40px] overflow-hidden bg-spotify-gradient shadow-2xl flex flex-col">
+        
+        <header class="flex items-center justify-between px-6 pt-12 pb-4 relative z-20">
+            <button class="p-2 -ml-2 text-white/80 hover:text-white active:scale-95 transition-transform"><i data-lucide="chevron-down" class="w-7 h-7"></i></button>
+            <div class="flex flex-col items-center">
+                <span class="text-xs font-bold tracking-widest text-white/80 uppercase">Letras</span>
+                <div class="flex items-center gap-2 mt-1">
+                    <button id="toggle-pron" class="toggle-btn active px-3 py-1 text-[10px] font-bold rounded-full transition-colors uppercase tracking-wider">Pron</button>
+                    <button id="toggle-esp" class="toggle-btn active px-3 py-1 text-[10px] font-bold rounded-full transition-colors uppercase tracking-wider">Esp</button>
+                </div>
             </div>
-        </div>
+            <button class="p-2 -mr-2 text-white/80 hover:text-white active:scale-95 transition-transform"><i data-lucide="more-horizontal" class="w-7 h-7"></i></button>
+        </header>
 
-        <!-- Lyrics Container -->
-        <div id="lyrics-container" class="flex-1 overflow-y-auto no-scrollbar px-6 pt-10 pb-40 scroll-smooth">
-            <div class="h-20"></div> <!-- Spacer -->
-            <!-- Las letras se inyectan aquí -->
-        </div>
+        <main id="lyrics-container" class="flex-1 overflow-y-auto no-scrollbar px-6 pb-72 pt-8 space-y-8 relative z-10 scroll-smooth">
+            <div id="spacer-top" class="h-10"></div>
+            </main>
 
-        <!-- Manual Footer Indicator -->
-        <div class="absolute bottom-6 w-full text-center text-white/50 text-[10px] uppercase tracking-widest pointer-events-none">
-            Haz clic para avanzar
-        </div>
+        <footer class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-[#121212] to-transparent pt-24 pb-8 px-6 z-30 pointer-events-none">
+            
+            <div class="flex items-center justify-between mb-6 pointer-events-auto">
+                <div class="flex items-center gap-4">
+                    <div class="w-[56px] h-[56px] bg-[#B22518] rounded flex items-center justify-center shadow-md overflow-hidden relative">
+                        <img src="drag-path-cover.jpg" alt="Drag Path Cover" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/A82417/000000?text=TOP'">
+                    </div>
+                    <div class="flex flex-col">
+                        <h2 class="text-[20px] font-bold text-white leading-tight tracking-tight">Drag Path</h2>
+                        <p class="text-[15px] text-white/70 font-medium mt-0.5">Twenty One Pilots</p>
+                    </div>
+                </div>
+                <button class="w-6 h-6 rounded-full bg-[#1ED760] flex items-center justify-center text-black active:scale-95 transition-transform hover:scale-105"><i data-lucide="check" class="w-4 h-4 stroke-[3]"></i></button>
+            </div>
+
+            <div class="space-y-1.5 mb-6 pointer-events-auto">
+                <div class="w-full h-1 bg-white/20 rounded-full relative">
+                    <div class="h-full bg-white rounded-full w-0 relative"></div>
+                </div>
+                <div class="flex justify-between text-[11px] font-medium text-white/60 tracking-wide font-mono">
+                    <span>0:00</span>
+                    <span>3:44</span>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-6 px-1 pointer-events-auto opacity-70">
+                <button><i data-lucide="shuffle" class="w-[22px] h-[22px] stroke-[2.5] text-[#1ED760]"></i></button>
+                <button><i data-lucide="skip-back" class="w-9 h-9 icon-solid text-white"></i></button>
+                <button class="w-[64px] h-[64px] flex items-center justify-center bg-white rounded-full text-black shadow-xl">
+                    <i data-lucide="play" class="w-8 h-8 ml-1 icon-solid"></i>
+                </button>
+                <button><i data-lucide="skip-forward" class="w-9 h-9 icon-solid text-white"></i></button>
+                <button><i data-lucide="timer" class="w-6 h-6 text-white"></i></button>
+            </div>
+
+            <div class="flex justify-between items-center px-1 pointer-events-auto">
+                <button class="text-white/70 hover:text-white transition-transform"><i data-lucide="monitor-speaker" class="w-5 h-5"></i></button>
+                <div class="flex gap-6">
+                    <button class="text-white/70 hover:text-white transition-transform"><i data-lucide="share-2" class="w-5 h-5"></i></button>
+                    <button class="text-white/70 hover:text-white transition-transform"><i data-lucide="list-music" class="w-5 h-5"></i></button>
+                </div>
+            </div>
+        </footer>
     </div>
 
     <script>
+        lucide.createIcons();
+
+        // Datos de las letras sin preocuparse por los tiempos
         const lyricsData = [
             { en: "When I see the devil's eyes", pron: "Wuen ai si de devils ais", es: "Cuando veo los ojos del diablo" },
             { en: "A current travels down my spine", pron: "A corrent travels daun mai spain", es: "Un escalofrío recorre mi espalda" },
             { en: "He found me", pron: "Ji faund mi", es: "Él me encontró" },
             { en: "Seems as though I've lost again", pron: "Sims as dou aiv lost aguen", es: "Parece que he perdido otra vez" },
             { en: "A story told ad nauseam", pron: "A stori told ad nosiam", es: "Una historia contada hasta el hartazgo" },
-            { en: "He found me", pron: "Ji faund mi", es: "Él me encontró" }
-            // ... (Añade aquí el resto de tus líneas de la misma forma)
+            { en: "He found me", pron: "Ji faund mi", es: "Él me encontró" },
+            { en: "Maybe once or twice or three", pron: "Meibi uans or tuais or zri", es: "Quizás una o dos o tres" },
+            { en: "He's tried his hand at drowning me", pron: "Jis traid jis jand at drauning mi", es: "Ha intentado ahogarme" },
+            { en: "But I'm still on fire", pron: "Bat aim stil on faiar", es: "Pero sigo en llamas" },
+            { en: "At least I'm pretty sure", pron: "At list aim priti shur", es: "Al menos estoy bastante seguro" },
+            
+            { en: "When I see the devil's eyes", pron: "Wuen ai si de devils ais", es: "Cuando veo los ojos del diablo" },
+            { en: "I'll look away and smile wide", pron: "Ail luk auei and smail uaid", es: "Desviaré la mirada y sonreiré ampliamente" },
+            { en: "You found me", pron: "Yu faund mi", es: "Tú me encontraste" },
+            { en: "'Cause then I'll know you're also there", pron: "Coz den ail no yur olso der", es: "Porque entonces sabré que tú también estás ahí" },
+            { en: "'Cause proof is in the adversere", pron: "Coz pruf is in de adverser", es: "Porque la prueba está en el adversario" },
+            { en: "You found me", pron: "Yu faund mi", es: "Tú me encontraste" },
+            
+            { en: "A drag path etched in the surface", pron: "A drag paz echt in de sorfeis", es: "Un sendero de arrastre grabado en la superficie" },
+            { en: "As evidence, I left there on purpose", pron: "As evidens, ai left der on porpos", es: "Como evidencia, lo dejé ahí a propósito" },
+            { en: "A sad sack, laying on the surface", pron: "A sad sak, leiing on de sorfeis", es: "Un perdedor, tirado en la superficie" },
+            { en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { en: "I dug my heels into the gravel", pron: "Ai dag mai jils intu de gravel", es: "Clavé mis talones en la grava" },
+            { en: "As evidence, for you to unravel", pron: "As evidens, for yu tu anravel", es: "Como evidencia, para que tú lo desenredes" },
+            { en: "A drag path, etched in the surface", pron: "A drag paz, echt in de sorfeis", es: "Un sendero de arrastre, grabado en la superficie" },
+            { en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            
+            { en: "Would you", pron: "Wud yu", es: "¿Lo harías?" },
+            { en: "(Would you, ooh)", pron: "(Wud yu, uu)", es: "(¿Lo harías, ooh?)" },
+            { en: "Please, please hurry", pron: "Plis, plis jarri", es: "Por favor, por favor, apúrate" },
+            { en: "Would you", pron: "Wud yu", es: "¿Lo harías?" },
+            { en: "(Would you, ooh)", pron: "(Wud yu, uu)", es: "(¿Lo harías, ooh?)" },
+            { en: "Please, please hurry", pron: "Plis, plis jarri", es: "Por favor, por favor, apúrate" },
+            
+            { en: "Can you, can you, can you, can you?", pron: "Can yu, can yu, can yu, can yu?", es: "¿Puedes, puedes, puedes, puedes?" },
+            
+            { en: "A drag path, etched in the surface", pron: "A drag paz, echt in de sorfeis", es: "Un sendero de arrastre, grabado en la superficie" },
+            { en: "As evidence, I left there on purpose", pron: "As evidens, ai left der on porpos", es: "Como evidencia, lo dejé ahí a propósito" },
+            { en: "A sad sack, laying on the surface", pron: "A sad sak, leiing on de sorfeis", es: "Un perdedor, tirado en la superficie" },
+            { en: "Can you, can you find me?", pron: "Can yu, can yu faind mi?", es: "¿Puedes, puedes encontrarme?" },
+            { en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            { en: "I dug my heels into the gravel", pron: "Ai dag mai jils intu de gravel", es: "Clavé mis talones en la grava" },
+            { en: "As evidence, for you to unravel", pron: "As evidens, for yu tu anravel", es: "Como evidencia, para que tú lo desenredes" },
+            { en: "A drag path, etched in the surface", pron: "A drag paz, echt in de sorfeis", es: "Un sendero de arrastre, grabado en la superficie" },
+            { en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            
+            { en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            { en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            { en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            { en: "Can you find me?", pron: "Can yu faind mi?", es: "¿Puedes encontrarme?" },
+            { en: "(Can you find me?)", pron: "(Can yu faind mi?)", es: "(¿Puedes encontrarme?)" },
+            
+            { en: "Then the Sun begins to rise", pron: "Den de san biguins tu rais", es: "Entonces el sol comienza a salir" },
+            { en: "We made it through the darkest night", pron: "Wi meid it zru de darkest nait", es: "Lo logramos a través de la noche más oscura" },
+            { en: "You found me", pron: "Yu faund mi", es: "Tú me encontraste" }
         ];
 
-        let currentIndex = 0;
-        const container = document.getElementById('lyrics-container');
+        let showPron = true;
+        let showEsp = true;
 
-        // Renderizado
-        lyricsData.forEach((l, i) => {
-            const div = document.createElement('div');
-            div.className = "lyric-line text-2xl font-bold tracking-tight mb-8";
-            div.innerHTML = `
-                <div class="layer-en">${l.en}</div>
-                <div class="layer-pron text-base italic text-white/50">${l.pron}</div>
-                <div class="layer-es text-base text-white/70">${l.es}</div>
-            `;
-            div.onclick = advanceLyric; // Clic en cualquier línea avanza
-            container.appendChild(div);
+        const container = document.getElementById('lyrics-container');
+        const togglePronBtn = document.getElementById('toggle-pron');
+        const toggleEspBtn = document.getElementById('toggle-esp');
+
+        // Renderizado estático para scroll manual
+        function renderLyrics() {
+            lyricsData.forEach((lyric) => {
+                const block = document.createElement('div');
+                block.className = 'lyric-line';
+                
+                block.innerHTML = `
+                    <div class="text-[26px] font-bold text-white tracking-tight leading-tight mb-1 layer-en">${lyric.en}</div>
+                    <div class="text-[15px] italic text-white/50 layer-pron mb-1 transition-all duration-300 ${showPron ? 'block' : 'hidden'}">${lyric.pron}</div>
+                    <div class="text-[16px] text-white/70 layer-es transition-all duration-300 ${showEsp ? 'block' : 'hidden'}">${lyric.es}</div>
+                `;
+
+                container.appendChild(block);
+            });
+            const spacerBottom = document.createElement('div');
+            spacerBottom.className = 'h-52'; 
+            container.appendChild(spacerBottom);
+        }
+
+        function updateLayersVisibility() {
+            document.querySelectorAll('.layer-pron').forEach(el => el.style.display = showPron ? 'block' : 'none');
+            document.querySelectorAll('.layer-es').forEach(el => el.style.display = showEsp ? 'block' : 'none');
+        }
+
+        togglePronBtn.addEventListener('click', () => { 
+            showPron = !showPron; 
+            togglePronBtn.classList.toggle('active'); 
+            updateLayersVisibility(); 
         });
 
-        function advanceLyric() {
-            if (currentIndex < lyricsData.length - 1) {
-                currentIndex++;
-                updateView();
-            }
-        }
+        toggleEspBtn.addEventListener('click', () => { 
+            showEsp = !showEsp; 
+            toggleEspBtn.classList.toggle('active'); 
+            updateLayersVisibility(); 
+        });
 
-        function updateView() {
-            const lines = document.querySelectorAll('.lyric-line');
-            lines.forEach((el, i) => {
-                if (i === currentIndex) {
-                    el.classList.add('active');
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } else {
-                    el.classList.remove('active');
-                }
-            });
-        }
-
-        // Toggles
-        document.getElementById('toggle-pron').onclick = function() {
-            this.classList.toggle('active');
-            document.querySelectorAll('.layer-pron').forEach(el => el.style.display = this.classList.contains('active') ? 'block' : 'none');
-        };
-        
-        document.getElementById('toggle-esp').onclick = function() {
-            this.classList.toggle('active');
-            document.querySelectorAll('.layer-es').forEach(el => el.style.display = this.classList.contains('active') ? 'block' : 'none');
-        };
-
-        // Inicializar
-        updateView();
+        // Inicializar vistas
+        renderLyrics();
     </script>
 </body>
 </html>
