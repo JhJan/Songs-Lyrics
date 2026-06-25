@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag Path - Spotify Desktop UI</title>
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <script src="https://unpkg.com/lucide@latest"><\/script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: #fff; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .lyric-line { transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out; transform-origin: left center; scroll-margin-top: 160px; }
+        .lyric-line.active { opacity: 1 !important; transform: scale(1.03); }
+        .lyric-line.inactive { opacity: 0.25; transform: scale(1); }
+        .toggle-btn.active { background-color: rgba(255, 255, 255, 0.2); color: white; border-color: transparent; }
+        .toggle-btn { background-color: transparent; color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .bg-spotify-desktop-gradient { background: linear-gradient(135deg, #A82417 0%, #121212 60%, #121212 100%); }
+        .icon-solid { fill: currentColor; stroke: currentColor; }
+    </style>
+</head>
+<body class="bg-black min-h-screen flex items-center justify-center p-0 sm:p-4 md:p-6 lg:p-8">
+    <div class="w-full max-w-[1280px] h-[100dvh] sm:h-[85vh] sm:min-h-[680px] sm:rounded-2xl overflow-hidden bg-spotify-desktop-gradient shadow-2xl flex flex-col relative">
+        <header class="w-full flex items-center justify-between px-8 py-6 relative z-20 bg-gradient-to-b from-black/40 to-transparent">
+            <div class="flex items-center gap-4">
+                <button class="p-2 bg-black/40 rounded-full text-white/80 hover:text-white transition-colors"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+                <div class="hidden md:flex flex-col">
+                    <span class="text-xs font-bold tracking-widest text-white/60 uppercase">Reproduciendo</span>
+                    <span class="text-sm font-bold text-white">Drag Path</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 bg-black/20 p-1.5 rounded-full backdrop-blur-md border border-white/5">
+                <span class="text-xs font-bold text-white/60 uppercase px-2 tracking-wider hidden sm:inline">Letras:</span>
+                <button id="toggle-pron" class="toggle-btn active px-4 py-1.5 text-xs font-bold rounded-full transition-all uppercase tracking-wider">Pronunciación</button>
+                <button id="toggle-esp" class="toggle-btn active px-4 py-1.5 text-xs font-bold rounded-full transition-all uppercase tracking-wider">Español</button>
+            </div>
+            <button class="p-2 text-white/80 hover:text-white transition-transform active:scale-95"><i data-lucide="maximize-2" class="w-5 h-5"></i></button>
+        </header>
+        <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden relative z-10 px-8 pb-32">
+            <div class="lg:col-span-5 flex flex-col justify-center items-center lg:items-start text-center lg:text-left pb-6 lg:pb-0 lg:pr-8 border-b lg:border-b-0 lg:border-r border-white/10">
+                <div class="w-[240px] h-[240px] md:w-[320px] md:h-[320px] rounded-xl shadow-2xl overflow-hidden relative group transition-transform duration-300 hover:scale-[1.02]" style="background-color: #A82417">
+                    <div class="w-full h-full flex items-center justify-center opacity-60">
+                        <svg viewBox="0 0 100 100" class="w-24 h-24 fill-black">
+                            <circle cx="50" cy="30" r="7" /><path d="M40 45 L60 45 L55 90 L45 90 Z" /><path d="M40 45 L15 15 L22 10 L45 38 Z" /><path d="M60 45 L85 15 L78 10 L55 38 Z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-6 w-full max-w-[320px]">
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="truncate">
+                            <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight truncate">Drag Path</h1>
+                            <p class="text-base md:text-lg text-white/70 font-medium mt-1">Twenty One Pilots</p>
+                        </div>
+                        <button class="w-8 h-8 rounded-full bg-[#1ED760] flex items-center justify-center text-black shadow-md shrink-0 hover:scale-105 active:scale-95 transition-transform">
+                            <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <main id="lyrics-container" class="lg:col-span-7 overflow-y-auto no-scrollbar pt-8 space-y-10 scroll-smooth pb-[30vh] lg:pl-12">
+                <div id="spacer-top" class="h-[5vh]"></div>
+            </main>
+        </div>
+        <footer class="absolute bottom-0 left-0 w-full bg-black/80 backdrop-blur-lg border-t border-white/10 py-4 px-8 z-30 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="hidden sm:flex items-center gap-3 w-1/4">
+                <div class="w-10 h-10 rounded overflow-hidden flex items-center justify-center" style="background-color: #A82417">
+                    <i data-lucide="music" class="w-5 h-5 text-black/50"></i>
+                </div>
+                <div class="flex flex-col truncate">
+                    <span class="text-sm font-bold text-white truncate">Drag Path</span>
+                    <span class="text-xs text-white/60 truncate">Twenty One Pilots</span>
+                </div>
+            </div>
+            <div class="flex flex-col items-center gap-2 w-full sm:w-2/4 max-w-[500px]">
+                <div class="flex items-center gap-6 opacity-80">
+                    <button class="text-[#1ED760] hover:scale-105 transition-transform"><i data-lucide="shuffle" class="w-4 h-4 stroke-[2.5]"></i></button>
+                    <button class="text-white hover:text-white transition-colors"><i data-lucide="skip-back" class="w-5 h-5 icon-solid"></i></button>
+                    <button class="w-8 h-8 flex items-center justify-center bg-white rounded-full text-black hover:scale-105 transition-transform">
+                        <i data-lucide="play" class="w-4 h-4 ml-0.5 icon-solid"></i>
+                    </button>
+                    <button class="text-white hover:text-white transition-colors"><i data-lucide="skip-forward" class="w-5 h-5 icon-solid"></i></button>
+                    <button class="text-white/70 hover:text-white transition-colors"><i data-lucide="repeat" class="w-4 h-4"></i></button>
+                </div>
+                <div class="w-full flex items-center gap-3">
+                    <span class="text-[11px] font-mono text-white/50">0:00</span>
+                    <div class="flex-1 h-1 bg-white/20 rounded-full relative"><div class="h-full bg-white rounded-full w-0"></div></div>
+                    <span class="text-[11px] font-mono text-white/50">3:44</span>
+                </div>
+            </div>
+            <div class="hidden sm:flex items-center justify-end gap-4 w-1/4 text-white/60">
+                <button class="hover:text-white transition-colors"><i data-lucide="mic-2" class="w-4 h-4 text-[#1ED760]"></i></button>
+                <button class="hover:text-white transition-colors"><i data-lucide="list-music" class="w-4 h-4"></i></button>
+                <button class="hover:text-white transition-colors"><i data-lucide="monitor-speaker" class="w-4 h-4"></i></button>
+                <div class="flex items-center gap-2 w-20">
+                    <i data-lucide="volume-2" class="w-4 h-4"></i>
+                    <div class="w-full h-1 bg-white/30 rounded-full"><div class="w-2/3 h-full bg-white rounded-full"></div></div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script>
+        lucide.createIcons();
+        const lyricsData = [
+    {
+        "time": 0,
+        "en": "When I see the devil's eyes",
+        "pron": "Wuen ai si de devils ais",
+        "es": "Cuando yo vea los ojos del demonio"
+    },
+    {
+        "time": 5,
+        "en": "I'll look away and smile wide",
+        "pron": "Ail luk auei and smail uaid",
+        "es": "Desviaré la mirada y daré una gran sonrisa"
+    },
+    {
+        "time": 10,
+        "en": "You found me",
+        "pron": "Yu faund mi",
+        "es": "Me encontraste"
+    },
+    {
+        "time": 15,
+        "en": "Then I'll know you're also there",
+        "pron": "Den ail no yur olso der",
+        "es": "Entonces sabré que también estás ahí"
+    },
+    {
+        "time": 20,
+        "en": "'Cause proof is in the adversere",
+        "pron": "Coz pruf is in de adverser",
+        "es": "Porque la prueba está en la adversidad"
+    },
+    {
+        "time": 25,
+        "en": "You found me",
+        "pron": "Yu faund mi",
+        "es": "Me encontraste"
+    },
+    {
+        "time": 30,
+        "en": "A drag path",
+        "pron": "A drag paz",
+        "es": "Un rastro de huellas"
+    },
+    {
+        "time": 35,
+        "en": "Etched in the surface as evidence",
+        "pron": "Etsht in de sorfeis as evidens",
+        "es": "Grabado en la superficie como evidencia"
+    },
+    {
+        "time": 40,
+        "en": "I left there on purpose",
+        "pron": "Ai left der on porpos",
+        "es": "Lo dejé ahí a propósito"
+    },
+    {
+        "time": 45,
+        "en": "A sad sack",
+        "pron": "A sad sak",
+        "es": "Un pobre infeliz"
+    },
+    {
+        "time": 50,
+        "en": "Laying on the surface (yeah)",
+        "pron": "Leiing on de sorfeis (yea)",
+        "es": "Tirado en la superficie (sí)"
+    },
+    {
+        "time": 55,
+        "en": "Can you find me?",
+        "pron": "Can yu faind mi?",
+        "es": "¿Puedes encontrarme?"
+    },
+    {
+        "time": 60,
+        "en": "When I see the devil's eyes",
+        "pron": "Wuen ai si de devils ais",
+        "es": "Cuando yo vea los ojos del demonio"
+    },
+    {
+        "time": 65,
+        "en": "A current travels down my spine",
+        "pron": "A corrent travels daun mai spain",
+        "es": "Un escalofrío recorrerá mi espalda"
+    },
+    {
+        "time": 70,
+        "en": "You found me",
+        "pron": "Yu faund mi",
+        "es": "Me encontraste"
+    },
+    {
+        "time": 75,
+        "en": "A drag path",
+        "pron": "A drag paz",
+        "es": "Un rastro de huellas"
+    },
+    {
+        "time": 80,
+        "en": "Etched in the surface as evidence",
+        "pron": "Etsht in de sorfeis as evidens",
+        "es": "Grabado en la superficie como evidencia"
+    },
+    {
+        "time": 85,
+        "en": "I left there on purpose",
+        "pron": "Ai left der on porpos",
+        "es": "Lo dejé ahí a propósito"
+    },
+    {
+        "time": 90,
+        "en": "A sad sack",
+        "pron": "A sad sak",
+        "es": "Un pobre infeliz"
+    },
+    {
+        "time": 95,
+        "en": "Laying on the surface (yeah)",
+        "pron": "Leiing on de sorfeis (yea)",
+        "es": "Tirado en la superficie (sí)"
+    },
+    {
+        "time": 100,
+        "en": "Can you find me?",
+        "pron": "Can yu faind mi?",
+        "es": "¿Puedes encontrarme?"
+    },
+    {
+        "time": 105,
+        "en": "I dug my",
+        "pron": "Ai dag mai",
+        "es": "Clavé mis"
+    },
+    {
+        "time": 110,
+        "en": "Heels into the gravel as evidence",
+        "pron": "Jils intu de gravel as evidens",
+        "es": "Talones en la grava como evidencia"
+    },
+    {
+        "time": 115,
+        "en": "For you to unravel",
+        "pron": "For yu tu anravel",
+        "es": "Para que tú lo descifres"
+    },
+    {
+        "time": 120,
+        "en": "A drag path",
+        "pron": "A drag paz",
+        "es": "Un rastro de huellas"
+    },
+    {
+        "time": 125,
+        "en": "Etched in the surface (yeah)",
+        "pron": "Etsht in de sorfeis (yea)",
+        "es": "Grabado en la superficie (sí)"
+    },
+    {
+        "time": 130,
+        "en": "Can you find me?",
+        "pron": "Can yu faind mi?",
+        "es": "¿Puedes encontrarme?"
+    },
+    {
+        "time": 135,
+        "en": "Can you, can you, can you, can you?",
+        "pron": "Can yu, can yu, can yu, can yu?",
+        "es": "¿Puedes, puedes, puedes, puedes?"
+    },
+    {
+        "time": 140,
+        "en": "A drag path",
+        "pron": "A drag paz",
+        "es": "Un rastro de huellas"
+    },
+    {
+        "time": 145,
+        "en": "Etched in the surface as evidence",
+        "pron": "Etsht in de sorfeis as evidens",
+        "es": "Grabado en la superficie como evidencia"
+    },
+    {
+        "time": 150,
+        "en": "I left there on purpose",
+        "pron": "Ai left der on porpos",
+        "es": "Lo dejé ahí a propósito"
+    },
+    {
+        "time": 155,
+        "en": "A sad sack",
+        "pron": "A sad sak",
+        "es": "Un pobre infeliz"
+    },
+    {
+        "time": 160,
+        "en": "Laying on the surface",
+        "pron": "Leiing on de sorfeis",
+        "es": "Caído en la superficie"
+    },
+    {
+        "time": 165,
+        "en": "(Can you, can you find me?) Can you find me?",
+        "pron": "(Can yu, can yu faind mi?) Can yu faind mi?",
+        "es": "(¿Puedes, puedes encontrarme?) ¿Puedes encontrarme?"
+    },
+    {
+        "time": 170,
+        "en": "I dug my",
+        "pron": "Ai dag mai",
+        "es": "Clavé mis"
+    },
+    {
+        "time": 175,
+        "en": "Heels into the gravel as evidence",
+        "pron": "Jils intu de gravel as evidens",
+        "es": "Talones en la grava como evidencia"
+    },
+    {
+        "time": 180,
+        "en": "For you to unravel",
+        "pron": "For yu tu anravel",
+        "es": "Para que tú lo descifres"
+    },
+    {
+        "time": 185,
+        "en": "A drag path",
+        "pron": "A drag paz",
+        "es": "Un rastro de huellas"
+    },
+    {
+        "time": 190,
+        "en": "Etched in the surface",
+        "pron": "Etsht in de sorfeis",
+        "es": "Grabado en la superficie"
+    },
+    {
+        "time": 195,
+        "en": "Can you find me?",
+        "pron": "Can yu faind mi?",
+        "es": "¿Puedes encontrarme?"
+    },
+    {
+        "time": 200,
+        "en": "Can you find me? (Can you find me?)",
+        "pron": "Can yu faind mi? (Can yu faind mi?)",
+        "es": "¿Puedes encontrarme? (¿Puedes encontrarme?)"
+    },
+    {
+        "time": 205,
+        "en": "Can you find me? (Can you find me?)",
+        "pron": "Can yu faind mi? (Can yu faind mi?)",
+        "es": "¿Puedes encontrarme? (¿Puedes encontrarme?)"
+    },
+    {
+        "time": 210,
+        "en": "Can you find me? (Can you find me?)",
+        "pron": "Can yu faind mi? (Can yu faind mi?)",
+        "es": "¿Puedes encontrarme? (¿Puedes encontrarme?)"
+    },
+    {
+        "time": 215,
+        "en": "Can you find me? (Can you find me?)",
+        "pron": "Can yu faind mi? (Can yu faind mi?)",
+        "es": "¿Puedes encontrarme? (¿Puedes encontrarme?)"
+    }
+];
+        let showPron = true; let showEsp = true;
+        const container = document.getElementById('lyrics-container');
+        const togglePronBtn = document.getElementById('toggle-pron');
+        const toggleEspBtn = document.getElementById('toggle-esp');
+        
+        function renderLyrics() {
+            lyricsData.forEach((lyric, index) => {
+                const block = document.createElement('div');
+                block.className = 'lyric-line inactive cursor-pointer py-1';
+                block.dataset.index = index;
+                block.innerHTML = \`
+                    <div class="text-[24px] md:text-[28px] font-bold text-white tracking-tight leading-tight mb-1.5 layer-en">\${lyric.en}</div>
+                    <div class="text-[14px] md:text-[15px] italic text-white/50 layer-pron mb-1 transition-all duration-300 \${showPron ? 'block' : 'hidden'}">\${lyric.pron}</div>
+                    <div class="text-[15px] md:text-[16px] text-white/70 layer-es transition-all duration-300 \${showEsp ? 'block' : 'hidden'}">\${lyric.es}</div>
+                \`;
+                block.addEventListener('click', () => { block.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+                container.appendChild(block);
+            });
+        }
+        function updateLayersVisibility() {
+            document.querySelectorAll('.layer-pron').forEach(el => el.style.display = showPron ? 'block' : 'none');
+            document.querySelectorAll('.layer-es').forEach(el => el.style.display = showEsp ? 'block' : 'none');
+        }
+        togglePronBtn.addEventListener('click', () => { showPron = !showPron; togglePronBtn.classList.toggle('active'); updateLayersVisibility(); });
+        toggleEspBtn.addEventListener('click', () => { showEsp = !showEsp; toggleEspBtn.classList.toggle('active'); updateLayersVisibility(); });
+        
+        function initManualScrollSync() {
+            const observerOptions = { root: container, rootMargin: '-15% 0px -65% 0px', threshold: 0 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        document.querySelectorAll('.lyric-line').forEach(el => { el.classList.remove('active'); el.classList.add('inactive'); });
+                        entry.target.classList.remove('inactive'); entry.target.classList.add('active');
+                    }
+                });
+            }, observerOptions);
+            document.querySelectorAll('.lyric-line').forEach(line => observer.observe(line));
+        }
+        renderLyrics();
+        initManualScrollSync(); 
+    <\/script>
+</body>
+</html>
