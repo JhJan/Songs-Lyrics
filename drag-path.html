@@ -39,13 +39,11 @@
         </header>
         <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden relative z-10 px-8 pb-32">
             <div class="lg:col-span-5 flex flex-col justify-center items-center lg:items-start text-center lg:text-left pb-6 lg:pb-0 lg:pr-8 border-b lg:border-b-0 lg:border-r border-white/10">
+                
                 <div class="w-[240px] h-[240px] md:w-[320px] md:h-[320px] rounded-xl shadow-2xl overflow-hidden relative group transition-transform duration-300 hover:scale-[1.02]" style="background-color: #A82417">
-                    <div class="w-full h-full flex items-center justify-center opacity-60">
-                        <svg viewBox="0 0 100 100" class="w-24 h-24 fill-black">
-                            <circle cx="50" cy="30" r="7" /><path d="M40 45 L60 45 L55 90 L45 90 Z" /><path d="M40 45 L15 15 L22 10 L45 38 Z" /><path d="M60 45 L85 15 L78 10 L55 38 Z" />
-                        </svg>
-                    </div>
+                    <img src="drag-path-cover.jpg" alt="Drag Path Cover" class="w-full h-full object-cover">
                 </div>
+
                 <div class="mt-6 w-full max-w-[320px]">
                     <div class="flex items-center justify-between gap-4">
                         <div class="truncate">
@@ -64,12 +62,14 @@
         </div>
         <footer class="absolute bottom-0 left-0 w-full bg-black/80 backdrop-blur-lg border-t border-white/10 py-4 px-8 z-30 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="hidden sm:flex items-center gap-3 w-1/4">
-                <div class="w-10 h-10 rounded overflow-hidden flex items-center justify-center" style="background-color: #A82417">
-                    <i data-lucide="music" class="w-5 h-5 text-black/50"></i>
+                
+                <div class="w-14 h-14 rounded overflow-hidden flex items-center justify-center bg-gray-900 shadow-md">
+                    <img src="drag-path-cover.jpg" alt="Mini Cover" class="w-full h-full object-cover">
                 </div>
-                <div class="flex flex-col truncate">
-                    <span class="text-sm font-bold text-white truncate">Drag Path</span>
-                    <span class="text-xs text-white/60 truncate">Twenty One Pilots</span>
+                
+                <div class="flex flex-col truncate ml-1">
+                    <span class="text-sm font-bold text-white truncate hover:underline cursor-pointer">Drag Path</span>
+                    <span class="text-xs text-white/60 truncate hover:underline cursor-pointer">Twenty One Pilots</span>
                 </div>
             </div>
             <div class="flex flex-col items-center gap-2 w-full sm:w-2/4 max-w-[500px]">
