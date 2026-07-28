@@ -16,15 +16,18 @@
         .lyric-line.inactive { opacity: 0.25; transform: scale(1); }
         .toggle-btn.active { background-color: rgba(255, 255, 255, 0.2); color: white; border-color: transparent; }
         .toggle-btn { background-color: transparent; color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.3); }
-        .bg-spotify-desktop-gradient { background: linear-gradient(135deg, #A82417 0%, #121212 60%, #121212 100%); }
+        /* Cambio clave: Color sólido puro sin degradados */
+        .bg-spotify-solid { background-color: #C43B2B; }
         .icon-solid { fill: currentColor; stroke: currentColor; }
     </style>
 </head>
 <body class="bg-black min-h-screen flex items-center justify-center p-0 sm:p-4 md:p-6 lg:p-8">
-    <div class="w-full max-w-[1280px] h-[100dvh] sm:h-[85vh] sm:min-h-[680px] sm:rounded-2xl overflow-hidden bg-spotify-desktop-gradient shadow-2xl flex flex-col relative">
-        <header class="w-full flex items-center justify-between px-8 py-6 relative z-20 bg-gradient-to-b from-black/40 to-transparent">
+    <!-- Aplicada la clase bg-spotify-solid en lugar de bg-spotify-desktop-gradient -->
+    <div class="w-full max-w-[1280px] h-[100dvh] sm:h-[85vh] sm:min-h-[680px] sm:rounded-2xl overflow-hidden bg-spotify-solid shadow-2xl flex flex-col relative">
+        <!-- Eliminado bg-gradient-to-b del header para mayor limpieza -->
+        <header class="w-full flex items-center justify-between px-8 py-6 relative z-20">
             <div class="flex items-center gap-4">
-                <button class="p-2 bg-black/40 rounded-full text-white/80 hover:text-white transition-colors"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+                <button class="p-2 bg-black/20 rounded-full text-white/80 hover:text-white transition-colors"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
                 <div class="hidden md:flex flex-col">
                     <span class="text-xs font-bold tracking-widest text-white/60 uppercase">Reproduciendo</span>
                     <span class="text-sm font-bold text-white">Drag Path</span>
@@ -40,8 +43,8 @@
         <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden relative z-10 px-8 pb-32">
             <div class="lg:col-span-5 flex flex-col justify-center items-center lg:items-start text-center lg:text-left pb-6 lg:pb-0 lg:pr-8 border-b lg:border-b-0 lg:border-r border-white/10">
                 
-                <div class="w-[240px] h-[240px] md:w-[320px] md:h-[320px] rounded-xl shadow-2xl overflow-hidden relative group transition-transform duration-300 hover:scale-[1.02]" style="background-color: #A82417">
-                    <img src="drag-path-cover.jpg" alt="Drag Path Cover" class="w-full h-full object-cover">
+                <div class="w-[240px] h-[240px] md:w-[320px] md:h-[320px] rounded-xl shadow-2xl overflow-hidden relative group transition-transform duration-300 hover:scale-[1.02]" style="background-color: #C43B2B">
+                    <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=500&auto=format&fit=crop" alt="Drag Path Cover" class="w-full h-full object-cover">
                 </div>
 
                 <div class="mt-6 w-full max-w-[320px]">
@@ -64,7 +67,7 @@
             <div class="hidden sm:flex items-center gap-3 w-1/4">
                 
                 <div class="w-14 h-14 rounded overflow-hidden flex items-center justify-center bg-gray-900 shadow-md">
-                    <img src="drag-path-cover.jpg" alt="Mini Cover" class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=500&auto=format&fit=crop" alt="Mini Cover" class="w-full h-full object-cover">
                 </div>
                 
                 <div class="flex flex-col truncate ml-1">
