@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drag Path  2026 - Spotify Desktop UI</title>
+    <title>Drag Path 2026 - Spotify Desktop UI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -16,21 +16,20 @@
         .lyric-line.inactive { opacity: 0.25; transform: scale(1); }
         .toggle-btn.active { background-color: rgba(255, 255, 255, 0.2); color: white; border-color: transparent; }
         .toggle-btn { background-color: transparent; color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.3); }
-        /* Cambio clave: Color sólido puro sin degradados */
-        .bg-spotify-solid { background-color: #C43B2B; }
+        
+        /* Fondo minimalista de color sólido (sin degradados) */
+        .bg-spotify-solid { background-color: #c43b2b; }
         .icon-solid { fill: currentColor; stroke: currentColor; }
     </style>
 </head>
 <body class="bg-black min-h-screen flex items-center justify-center p-0 sm:p-4 md:p-6 lg:p-8">
-    <!-- Aplicada la clase bg-spotify-solid en lugar de bg-spotify-desktop-gradient -->
     <div class="w-full max-w-[1280px] h-[100dvh] sm:h-[85vh] sm:min-h-[680px] sm:rounded-2xl overflow-hidden bg-spotify-solid shadow-2xl flex flex-col relative">
-        <!-- Eliminado bg-gradient-to-b del header para mayor limpieza -->
         <header class="w-full flex items-center justify-between px-8 py-6 relative z-20">
             <div class="flex items-center gap-4">
                 <button class="p-2 bg-black/20 rounded-full text-white/80 hover:text-white transition-colors"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
                 <div class="hidden md:flex flex-col">
                     <span class="text-xs font-bold tracking-widest text-white/60 uppercase">Reproduciendo</span>
-                    <span class="text-sm font-bold text-white">Drag Path  2026</span>
+                    <span class="text-sm font-bold text-white">Drag Path 2026</span>
                 </div>
             </div>
             <div class="flex items-center gap-3 bg-black/20 p-1.5 rounded-full backdrop-blur-md border border-white/5">
@@ -43,14 +42,14 @@
         <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden relative z-10 px-8 pb-32">
             <div class="lg:col-span-5 flex flex-col justify-center items-center lg:items-start text-center lg:text-left pb-6 lg:pb-0 lg:pr-8 border-b lg:border-b-0 lg:border-r border-white/10">
                 
-                <div class="w-[240px] h-[240px] md:w-[320px] md:h-[320px] rounded-xl shadow-2xl overflow-hidden relative group transition-transform duration-300 hover:scale-[1.02]" style="background-color: #C43B2B">
-                    <img src="drag-path-cover.jpg" alt="Drag Path  2026 Cover" class="w-full h-full object-cover">
+                <div class="w-[240px] h-[240px] md:w-[320px] md:h-[320px] rounded-xl shadow-2xl overflow-hidden relative group transition-transform duration-300 hover:scale-[1.02]" style="background-color: #c43b2b">
+                    <img src="drag-path-cover.jpg" alt="Drag Path 2026 Cover" class="w-full h-full object-cover">
                 </div>
 
                 <div class="mt-6 w-full max-w-[320px]">
                     <div class="flex items-center justify-between gap-4">
                         <div class="truncate">
-                            <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight truncate">Drag Path  2026</h1>
+                            <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight truncate">Drag Path 2026</h1>
                             <p class="text-base md:text-lg text-white/70 font-medium mt-1">Twenty One Pilots</p>
                         </div>
                         <button class="w-8 h-8 rounded-full bg-[#1ED760] flex items-center justify-center text-black shadow-md shrink-0 hover:scale-105 active:scale-95 transition-transform">
@@ -71,7 +70,7 @@
                 </div>
                 
                 <div class="flex flex-col truncate ml-1">
-                    <span class="text-sm font-bold text-white truncate hover:underline cursor-pointer">Drag Path  2026</span>
+                    <span class="text-sm font-bold text-white truncate hover:underline cursor-pointer">Drag Path 2026</span>
                     <span class="text-xs text-white/60 truncate hover:underline cursor-pointer">Twenty One Pilots</span>
                 </div>
             </div>
@@ -107,267 +106,267 @@
         const lyricsData = [
     {
         "time": 0,
-        "en": "When I see the devil's eyes",
-        "pron": "Wuen ai si de devils ais",
-        "es": "Cuando yo vea los ojos del demonio"
+        "en": "Cuando yo vea los ojos del demonio",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 5,
-        "en": "I'll look away and smile wide",
-        "pron": "Ail luk auei and smail uaid",
-        "es": "Desviaré la mirada y daré una gran sonrisa"
+        "time": 0,
+        "en": "Desviaré la mirada y daré una gran sonrisa",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 10,
-        "en": "You found me",
-        "pron": "Yu faund mi",
-        "es": "Me encontraste"
+        "time": 0,
+        "en": "Me encontraste",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 15,
-        "en": "Then I'll know you're also there",
-        "pron": "Den ail no yur olso der",
-        "es": "Entonces sabré que también estás ahí"
+        "time": 0,
+        "en": "Entonces sabré que también estás ahí",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 20,
-        "en": "'Cause proof is in the adversere",
-        "pron": "Coz pruf is in de adverser",
-        "es": "Porque la prueba está en la adversidad"
+        "time": 0,
+        "en": "Porque la prueba está en la adversidad",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 25,
-        "en": "You found me",
-        "pron": "Yu faund mi",
-        "es": "Me encontraste"
+        "time": 0,
+        "en": "Me encontraste",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 30,
-        "en": "A drag path",
-        "pron": "A drag paz",
-        "es": "Un rastro de huellas"
+        "time": 0,
+        "en": "Un rastro de huellas",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 35,
-        "en": "Etched in the surface as evidence",
-        "pron": "Etsht in de sorfeis as evidens",
-        "es": "Grabado en la superficie como evidencia"
+        "time": 0,
+        "en": "Grabado en la superficie como evidencia",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 40,
-        "en": "I left there on purpose",
-        "pron": "Ai left der on porpos",
-        "es": "Lo dejé ahí a propósito"
+        "time": 0,
+        "en": "Lo dejé ahí a propósito",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 45,
-        "en": "A sad sack",
-        "pron": "A sad sak",
-        "es": "Un pobre infeliz"
+        "time": 0,
+        "en": "Un pobre infeliz",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 50,
-        "en": "Laying on the surface (yeah)",
-        "pron": "Leiing on de sorfeis (yea)",
-        "es": "Tirado en la superficie (sí)"
+        "time": 0,
+        "en": "Tirado en la superficie (sí)",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 55,
-        "en": "Can you find me?",
-        "pron": "Can yu faind mi?",
-        "es": "¿Puedes encontrarme?"
+        "time": 0,
+        "en": "¿Puedes encontrarme?",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 60,
-        "en": "When I see the devil's eyes",
-        "pron": "Wuen ai si de devils ais",
-        "es": "Cuando yo vea los ojos del demonio"
+        "time": 0,
+        "en": "Cuando yo vea los ojos del demonio",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 65,
-        "en": "A current travels down my spine",
-        "pron": "A corrent travels daun mai spain",
-        "es": "Un escalofrío recorrerá mi espalda"
+        "time": 0,
+        "en": "Un escalofrío recorrerá mi espalda",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 70,
-        "en": "You found me",
-        "pron": "Yu faund mi",
-        "es": "Me encontraste"
+        "time": 0,
+        "en": "Me encontraste",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 75,
-        "en": "A drag path",
-        "pron": "A drag paz",
-        "es": "Un rastro de huellas"
+        "time": 0,
+        "en": "Un rastro de huellas",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 80,
-        "en": "Etched in the surface as evidence",
-        "pron": "Etsht in de sorfeis as evidens",
-        "es": "Grabado en la superficie como evidencia"
+        "time": 0,
+        "en": "Grabado en la superficie como evidencia",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 85,
-        "en": "I left there on purpose",
-        "pron": "Ai left der on porpos",
-        "es": "Lo dejé ahí a propósito"
+        "time": 0,
+        "en": "Lo dejé ahí a propósito",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 90,
-        "en": "A sad sack",
-        "pron": "A sad sak",
-        "es": "Un pobre infeliz"
+        "time": 0,
+        "en": "Un pobre infeliz",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 95,
-        "en": "Laying on the surface (yeah)",
-        "pron": "Leiing on de sorfeis (yea)",
-        "es": "Tirado en la superficie (sí)"
+        "time": 0,
+        "en": "Tirado en la superficie (sí)",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 100,
-        "en": "Can you find me?",
-        "pron": "Can yu faind mi?",
-        "es": "¿Puedes encontrarme?"
+        "time": 0,
+        "en": "¿Puedes encontrarme?",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 105,
-        "en": "I dug my",
-        "pron": "Ai dag mai",
-        "es": "Clavé mis"
+        "time": 0,
+        "en": "Clavé mis",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 110,
-        "en": "Heels into the gravel as evidence",
-        "pron": "Jils intu de gravel as evidens",
-        "es": "Talones en la grava como evidencia"
+        "time": 0,
+        "en": "Talones en la grava como evidencia",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 115,
-        "en": "For you to unravel",
-        "pron": "For yu tu anravel",
-        "es": "Para que tú lo descifres"
+        "time": 0,
+        "en": "Para que tú lo descifres",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 120,
-        "en": "A drag path",
-        "pron": "A drag paz",
-        "es": "Un rastro de huellas"
+        "time": 0,
+        "en": "Un rastro de huellas",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 125,
-        "en": "Etched in the surface (yeah)",
-        "pron": "Etsht in de sorfeis (yea)",
-        "es": "Grabado en la superficie (sí)"
+        "time": 0,
+        "en": "Grabado en la superficie (sí)",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 130,
-        "en": "Can you find me?",
-        "pron": "Can yu faind mi?",
-        "es": "¿Puedes encontrarme?"
+        "time": 0,
+        "en": "¿Puedes encontrarme?",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 135,
-        "en": "Can you, can you, can you, can you?",
-        "pron": "Can yu, can yu, can yu, can yu?",
-        "es": "¿Puedes, puedes, puedes, puedes?"
+        "time": 0,
+        "en": "¿Puedes, puedes, puedes, puedes?",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 140,
-        "en": "A drag path",
-        "pron": "A drag paz",
-        "es": "Un rastro de huellas"
+        "time": 0,
+        "en": "Un rastro de huellas",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 145,
-        "en": "Etched in the surface as evidence",
-        "pron": "Etsht in de sorfeis as evidens",
-        "es": "Grabado en la superficie como evidencia"
+        "time": 0,
+        "en": "Grabado en la superficie como evidencia",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 150,
-        "en": "I left there on purpose",
-        "pron": "Ai left der on porpos",
-        "es": "Lo dejé ahí a propósito"
+        "time": 0,
+        "en": "Lo dejé ahí a propósito",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 155,
-        "en": "A sad sack",
-        "pron": "A sad sak",
-        "es": "Un pobre infeliz"
+        "time": 0,
+        "en": "Un pobre infeliz",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 160,
-        "en": "Laying on the surface",
-        "pron": "Leiing on de sorfeis",
-        "es": "Caído en la superficie"
+        "time": 0,
+        "en": "Caído en la superficie",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 165,
-        "en": "(Can you, can you find me?) Can you find me?",
-        "pron": "(Can yu, can yu faind mi?) Can yu faind mi?",
-        "es": "(¿Puedes, puedes encontrarme?) ¿Puedes encontrarme?"
+        "time": 0,
+        "en": "(¿Puedes, puedes encontrarme?) ¿Puedes encontrarme?",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 170,
-        "en": "I dug my",
-        "pron": "Ai dag mai",
-        "es": "Clavé mis"
+        "time": 0,
+        "en": "Clavé mis",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 175,
-        "en": "Heels into the gravel as evidence",
-        "pron": "Jils intu de gravel as evidens",
-        "es": "Talones en la grava como evidencia"
+        "time": 0,
+        "en": "Talones en la grava como evidencia",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 180,
-        "en": "For you to unravel",
-        "pron": "For yu tu anravel",
-        "es": "Para que tú lo descifres"
+        "time": 0,
+        "en": "Para que tú lo descifres",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 185,
-        "en": "A drag path",
-        "pron": "A drag paz",
-        "es": "Un rastro de huellas"
+        "time": 0,
+        "en": "Un rastro de huellas",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 190,
-        "en": "Etched in the surface",
-        "pron": "Etsht in de sorfeis",
-        "es": "Grabado en la superficie"
+        "time": 0,
+        "en": "Grabado en la superficie",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 195,
-        "en": "Can you find me?",
-        "pron": "Can yu faind mi?",
-        "es": "¿Puedes encontrarme?"
+        "time": 0,
+        "en": "¿Puedes encontrarme?",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 200,
-        "en": "Can you find me? (Can you find me?)",
-        "pron": "Can yu faind mi? (Can yu faind mi?)",
-        "es": "¿Puedes encontrarme? (¿Puedes encontrarme?)"
+        "time": 0,
+        "en": "¿Puedes encontrarme? (¿Puedes encontrarme?)",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 205,
-        "en": "Can you find me? (Can you find me?)",
-        "pron": "Can yu faind mi? (Can yu faind mi?)",
-        "es": "¿Puedes encontrarme? (¿Puedes encontrarme?)"
+        "time": 0,
+        "en": "¿Puedes encontrarme? (¿Puedes encontrarme?)",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 210,
-        "en": "Can you find me? (Can you find me?)",
-        "pron": "Can yu faind mi? (Can yu faind mi?)",
-        "es": "¿Puedes encontrarme? (¿Puedes encontrarme?)"
+        "time": 0,
+        "en": "¿Puedes encontrarme? (¿Puedes encontrarme?)",
+        "pron": "",
+        "es": ""
     },
     {
-        "time": 215,
-        "en": "Can you find me? (Can you find me?)",
-        "pron": "Can yu faind mi? (Can yu faind mi?)",
-        "es": "¿Puedes encontrarme? (¿Puedes encontrarme?)"
+        "time": 0,
+        "en": "¿Puedes encontrarme? (¿Puedes encontrarme?)",
+        "pron": "",
+        "es": ""
     }
 ];
         let showPron = true; let showEsp = true;
@@ -376,6 +375,7 @@
         const toggleEspBtn = document.getElementById('toggle-esp');
         
         function renderLyrics() {
+            if(!lyricsData || lyricsData.length === 0) return;
             lyricsData.forEach((lyric, index) => {
                 const block = document.createElement('div');
                 block.className = 'lyric-line inactive cursor-pointer py-1';
