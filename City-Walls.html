@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Walls - Spotify Desktop UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: #fff; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .lyric-line { transition: opacity 0.4s ease-out, transform 0.4s ease-out, text-shadow 0.4s ease; transform-origin: left center; scroll-margin-top: 200px; }
+        /* Mejora UX: Efecto de sombra suave para texto activo y escalado ajustado */
+        .lyric-line.active { opacity: 1 !important; transform: scale(1.04); text-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+        .lyric-line.inactive { opacity: 0.25; transform: scale(1); }
+        
+        .toggle-btn.active { background-color: rgba(255, 255, 255, 0.2); color: white; border-color: transparent; }
+        .toggle-btn { background-color: transparent; color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.3); }
+        
+        .bg-spotify-solid { background-color: #731C1A; transition: background-color 0.5s ease; }
+        .icon-solid { fill: currentColor; stroke: currentColor; }
+    </style>
+</head>
+<body class="bg-black min-h-screen flex items-center justify-center p-0 sm:p-4 md:p-6 lg:p-8">
+    <div class="w-full max-w-[1280px] h-[100dvh] sm:h-[85vh] sm:min-h-[680px] sm:rounded-2xl overflow-hidden bg-spotify-solid shadow-2xl flex flex-col relative">
+        <header class="w-full flex items-center justify-between px-8 py-6 relative z-20">
+            <div class="flex items-center gap-4">
+                <button class="p-2 bg-black/20 rounded-full text-white/80 hover:text-white hover:bg-black/40 transition-colors"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+                <div class="hidden md:flex flex-col">
+                    <span class="text-xs font-bold tracking-widest text-white/60 uppercase">Reproduciendo</span>
+                    <span class="text-sm font-bold text-white drop-shadow-md">City Walls</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 bg-black/20 p-1.5 rounded-full backdrop-blur-md border border-white/5">
+                <span class="text-xs font-bold text-white/60 uppercase px-2 tracking-wider hidden sm:inline">Letras:</span>
+                <button id="toggle-pron" class="toggle-btn active px-4 py-1.5 text-xs font-bold rounded-full transition-all uppercase tracking-wider hover:bg-white/10">Pronunciación</button>
+                <button id="toggle-esp" class="toggle-btn active px-4 py-1.5 text-xs font-bold rounded-full transition-all uppercase tracking-wider hover:bg-white/10">Español</button>
+            </div>
+            <button class="p-2 text-white/80 hover:text-white transition-transform active:scale-95 hover:bg-black/10 rounded-full"><i data-lucide="maximize-2" class="w-5 h-5"></i></button>
+        </header>
+        
+        <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden relative z-10 px-8 pb-32">
+            <div class="lg:col-span-5 flex flex-col justify-center items-center lg:items-start text-center lg:text-left pb-6 lg:pb-0 lg:pr-8 border-b lg:border-b-0 lg:border-r border-white/10">
+                
+                <div class="w-[240px] h-[240px] md:w-[320px] md:h-[320px] rounded-xl shadow-2xl overflow-hidden relative group transition-transform duration-500 hover:scale-[1.02]" style="background-color: #731C1A">
+                    <img src="Portadas/city-walls-cover.png" alt="City Walls Cover" class="w-full h-full object-cover transition-opacity duration-300" onerror="this.style.opacity='0'; this.parentElement.style.backgroundColor='#121212'">
+                </div>
+
+                <div class="mt-6 w-full max-w-[320px]">
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="truncate">
+                            <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight truncate drop-shadow-md">City Walls</h1>
+                            <p class="text-base md:text-lg text-white/70 font-medium mt-1">Twenty One Pilots</p>
+                        </div>
+                        <button class="w-8 h-8 rounded-full bg-[#1ED760] flex items-center justify-center text-black shadow-md shrink-0 hover:scale-105 active:scale-95 transition-transform">
+                            <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <main id="lyrics-container" class="lg:col-span-7 overflow-y-auto no-scrollbar pt-8 space-y-10 scroll-smooth pb-[40vh] lg:pl-12">
+                <div id="spacer-top" class="h-[10vh]"></div>
+            </main>
+        </div>
+        
+        <footer class="absolute bottom-0 left-0 w-full bg-black/85 backdrop-blur-xl border-t border-white/5 py-4 px-8 z-30 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="hidden sm:flex items-center gap-3 w-1/4">
+                <div class="w-14 h-14 rounded overflow-hidden flex items-center justify-center bg-gray-900 shadow-md">
+                    <img src="Portadas/city-walls-cover.png" alt="Mini Cover" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                </div>
+                <div class="flex flex-col truncate ml-1">
+                    <span class="text-sm font-bold text-white truncate hover:underline cursor-pointer">City Walls</span>
+                    <span class="text-xs text-white/60 truncate hover:underline cursor-pointer">Twenty One Pilots</span>
+                </div>
+            </div>
+            <div class="flex flex-col items-center gap-2 w-full sm:w-2/4 max-w-[500px]">
+                <div class="flex items-center gap-6 opacity-80">
+                    <button class="text-[#1ED760] hover:scale-105 transition-transform"><i data-lucide="shuffle" class="w-4 h-4 stroke-[2.5]"></i></button>
+                    <button class="text-white hover:text-white transition-colors"><i data-lucide="skip-back" class="w-5 h-5 icon-solid"></i></button>
+                    <button class="w-8 h-8 flex items-center justify-center bg-white rounded-full text-black hover:scale-105 transition-transform">
+                        <i data-lucide="play" class="w-4 h-4 ml-0.5 icon-solid"></i>
+                    </button>
+                    <button class="text-white hover:text-white transition-colors"><i data-lucide="skip-forward" class="w-5 h-5 icon-solid"></i></button>
+                    <button class="text-white/70 hover:text-white transition-colors"><i data-lucide="repeat" class="w-4 h-4"></i></button>
+                </div>
+                <div class="w-full flex items-center gap-3">
+                    <span class="text-[11px] font-mono text-white/50">0:00</span>
+                    <div class="flex-1 h-1 bg-white/20 rounded-full relative group cursor-pointer hover:bg-white/30 transition-colors">
+                        <div class="h-full bg-white rounded-full w-0 group-hover:bg-[#1ED760] transition-colors"></div>
+                    </div>
+                    <span class="text-[11px] font-mono text-white/50">5:22</span>
+                </div>
+            </div>
+            <div class="hidden sm:flex items-center justify-end gap-4 w-1/4 text-white/60">
+                <button class="hover:text-white transition-colors"><i data-lucide="mic-2" class="w-4 h-4 text-[#1ED760]"></i></button>
+                <button class="hover:text-white transition-colors"><i data-lucide="list-music" class="w-4 h-4"></i></button>
+                <button class="hover:text-white transition-colors"><i data-lucide="monitor-speaker" class="w-4 h-4"></i></button>
+                <div class="flex items-center gap-2 w-20 group cursor-pointer">
+                    <i data-lucide="volume-2" class="w-4 h-4"></i>
+                    <div class="w-full h-1 bg-white/30 rounded-full group-hover:bg-white/40 transition-colors">
+                        <div class="w-2/3 h-full bg-white rounded-full group-hover:bg-[#1ED760] transition-colors"></div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        lucide.createIcons();
+        const lyricsData = [
+    {
+        "time": 0,
+        "en": "Square up with me, I can take your right, throw a left",
+        "pron": "Skuer op wid mi, ai can teik yor rait, zrou a left",
+        "es": "Pelea conmigo, aguanto tu derecha, lánzame un gancho de izquierda"
+    },
+    {
+        "time": 0,
+        "en": "Pair up with me, I'ma take you right to the chest",
+        "pron": "Per op wid mi, aima teik iu rait tu de chest",
+        "es": "Únete a mí, voy a llevarte directo al corazón"
+    },
+    {
+        "time": 0,
+        "en": "Warpath etched in the surface",
+        "pron": "Worpaz ech-t in de surfes",
+        "es": "Camino de guerra marcado en la superficie"
+    },
+    {
+        "time": 0,
+        "en": "Lines of the yellow tape, they're movin' quiet like a",
+        "pron": "Lains of de yelou teip, der muvin cuaiet laik a",
+        "es": "Las filas de cintas amarillas avanzan en silencio, como una"
+    },
+    {
+        "time": 0,
+        "en": "Serpentine in a formation",
+        "pron": "Serpentain in a formeishon",
+        "es": "Serpentina en formación"
+    },
+    {
+        "time": 0,
+        "en": "Buddy, that's my team, pretty impatient",
+        "pron": "Badi, dats mai tim, priti impeishent",
+        "es": "Amigo, ese es mi equipo, y no tienen mucha paciencia"
+    },
+    {
+        "time": 0,
+        "en": "Now they're waitin' on me",
+        "pron": "Nau der weitin on mi",
+        "es": "Ahora me están esperando a mí"
+    },
+    {
+        "time": 0,
+        "en": "It might be the furthest we've reached",
+        "pron": "It mait bi de furdest wiv richt",
+        "es": "Puede que sea lo más lejos que hemos llegado"
+    },
+    {
+        "time": 0,
+        "en": "Now move it up, move it up, it's a breach",
+        "pron": "Nau muv it op, muv it op, its a brich",
+        "es": "Ahora avanza, avanza, es una brecha"
+    },
+    {
+        "time": 0,
+        "en": "I wonder where you are",
+        "pron": "Ai wuonder wer iu ar",
+        "es": "Me pregunto dónde estás"
+    },
+    {
+        "time": 0,
+        "en": "I wanted you to show me",
+        "pron": "Ai wuanted iu tu shou mi",
+        "es": "Quería que me mostraras"
+    },
+    {
+        "time": 0,
+        "en": "The way around the city walls",
+        "pron": "De wei araund de citi wols",
+        "es": "El camino alrededor de los muros de la ciudad"
+    },
+    {
+        "time": 0,
+        "en": "The way on through",
+        "pron": "De wei on zru",
+        "es": "El camino para entrar"
+    },
+    {
+        "time": 0,
+        "en": "I wonder where you are",
+        "pron": "Ai wuonder wer iu ar",
+        "es": "Me pregunto dónde estás"
+    },
+    {
+        "time": 0,
+        "en": "I wanted you to show me",
+        "pron": "Ai wuanted iu tu shou mi",
+        "es": "Quería que me mostraras"
+    },
+    {
+        "time": 0,
+        "en": "But now the night has fallen",
+        "pron": "Bot nau de nait jas folen",
+        "es": "Pero ahora la noche ha caído"
+    },
+    {
+        "time": 0,
+        "en": "Abandoned by the Sun",
+        "pron": "Abandond bai de son",
+        "es": "Abandonada por el Sol"
+    },
+    {
+        "time": 0,
+        "en": "Square up with me, I can come to you, tell me when",
+        "pron": "Skuer op wid mi, ai can com tu iu, tel mi wuen",
+        "es": "Pelea conmigo, puedo ir hacia ti, dime cuándo"
+    },
+    {
+        "time": 0,
+        "en": "Pair up with me, I can run on you, in the end",
+        "pron": "Per op wid mi, ai can ron on iu, in di end",
+        "es": "Únete a mí, puedo ir contra ti, al final"
+    },
+    {
+        "time": 0,
+        "en": "I write a promise in pencil, but my loyalty's in pen",
+        "pron": "Ai rait a promis in pensil, bot mai loialtis in pen",
+        "es": "Escribo una promesa a lápiz, pero mi lealtad es con tinta"
+    },
+    {
+        "time": 0,
+        "en": "Use a mistake as a crooked stencil, then we trace it back again",
+        "pron": "Ius a misteik as a crukt stensil, den wi treis it bak aguen",
+        "es": "Usa el error como una plantilla torcida, luego lo volvemos a trazar"
+    },
+    {
+        "time": 0,
+        "en": "From the mainland to the island of violence",
+        "pron": "From de meinland tu di ailand of vaiolens",
+        "es": "De la tierra firme a la isla de la violencia"
+    },
+    {
+        "time": 0,
+        "en": "It was the same plan for a while, decided",
+        "pron": "It wuas de seim plan for a wuail, disaided",
+        "es": "Era el mismo plan por un tiempo, decidí"
+    },
+    {
+        "time": 0,
+        "en": "To send me up and rip you out of your seat",
+        "pron": "Tu send mi op and rip iu aut of yor sit",
+        "es": "Llevarme arriba y arrancarte de tu asiento"
+    },
+    {
+        "time": 0,
+        "en": "You see, in a city with no entrance, there is not a retreat",
+        "pron": "Iu si, in a citi wid nou entrans, der is not a ritrit",
+        "es": "Ya ves, en una ciudad sin puertas, no hay camino de regreso"
+    },
+    {
+        "time": 0,
+        "en": "I'm wonderin' what you thought would happen, who you thought I would be",
+        "pron": "Aim wuonderin wuat iu zot wud japen, ju iu zot ai wud bi",
+        "es": "Me pregunto qué pensaste que pasaría, quién pensaste que sería yo"
+    },
+    {
+        "time": 0,
+        "en": "Was this a sideswipe or did you picture this in a dream?",
+        "pron": "Wuas dis a saidsuaip or did iu pikchur dis in a drim?",
+        "es": "¿Esto fue una indirecta o lo soñaste?"
+    },
+    {
+        "time": 0,
+        "en": "Buckle down, this is possibly the furthest we've reached",
+        "pron": "Bokol daun, dis is posibli de furdest wiv richt",
+        "es": "Prepárate, posiblemente sea lo más lejos que hemos llegado"
+    },
+    {
+        "time": 0,
+        "en": "Now move it up, move it up, it's a breach",
+        "pron": "Nau muv it op, muv it op, its a brich",
+        "es": "Ahora avanza, avanza, es una brecha"
+    },
+    {
+        "time": 0,
+        "en": "I wonder where you are",
+        "pron": "Ai wuonder wer iu ar",
+        "es": "Me pregunto dónde estás"
+    },
+    {
+        "time": 0,
+        "en": "I wanted you to show me",
+        "pron": "Ai wuanted iu tu shou mi",
+        "es": "Quería que me mostraras"
+    },
+    {
+        "time": 0,
+        "en": "The way around the city walls",
+        "pron": "De wei araund de citi wols",
+        "es": "El camino alrededor de los muros de la ciudad"
+    },
+    {
+        "time": 0,
+        "en": "The way on through",
+        "pron": "De wei on zru",
+        "es": "El camino para entrar"
+    },
+    {
+        "time": 0,
+        "en": "I wonder where you are",
+        "pron": "Ai wuonder wer iu ar",
+        "es": "Me pregunto dónde estás"
+    },
+    {
+        "time": 0,
+        "en": "I wanted you to show me",
+        "pron": "Ai wuanted iu tu shou mi",
+        "es": "Quería que me mostraras"
+    },
+    {
+        "time": 0,
+        "en": "But now the night has fallen",
+        "pron": "Bot nau de nait jas folen",
+        "es": "Pero ahora la noche ha caído"
+    },
+    {
+        "time": 0,
+        "en": "Abandoned by the Sun",
+        "pron": "Abandond bai de son",
+        "es": "Abandonada por el Sol"
+    },
+    {
+        "time": 0,
+        "en": "Abandoned by the Sun",
+        "pron": "Abandond bai de son",
+        "es": "Abandonada por el Sol"
+    },
+    {
+        "time": 0,
+        "en": "My smile wraps around my head, splitting it in",
+        "pron": "Mai smail raps araund mai jed, spliting it in",
+        "es": "Mi sonrisa rodea mi cabeza, partiéndola en"
+    },
+    {
+        "time": 0,
+        "en": "Two, two, two, two",
+        "pron": "Tu, tu, tu, tu",
+        "es": "Dos, dos, dos, dos"
+    },
+    {
+        "time": 0,
+        "en": "I don't have a clue how I can keep the top half",
+        "pron": "Ai dont jav a clu jau ai can kip de top jaf",
+        "es": "No tengo idea de cómo puedo mantener la mitad superior"
+    },
+    {
+        "time": 0,
+        "en": "Glued, glued, glued, glued",
+        "pron": "Glud, glud, glud, glud",
+        "es": "Pegada, pegada, pegada, pegada"
+    },
+    {
+        "time": 0,
+        "en": "My smile wraps around my head, splitting it in",
+        "pron": "Mai smail raps araund mai jed, spliting it in",
+        "es": "Mi sonrisa rodea mi cabeza, partiéndola en"
+    },
+    {
+        "time": 0,
+        "en": "Two, two, two, two",
+        "pron": "Tu, tu, tu, tu",
+        "es": "Dos, dos, dos, dos"
+    },
+    {
+        "time": 0,
+        "en": "I don't have a clue how I can keep the top half",
+        "pron": "Ai dont jav a clu jau ai can kip de top jaf",
+        "es": "No tengo idea de cómo puedo mantener la mitad superior"
+    },
+    {
+        "time": 0,
+        "en": "Glued, glued, glued, glued",
+        "pron": "Glud, glud, glud, glud",
+        "es": "Pegada, pegada, pegada, pegada"
+    },
+    {
+        "time": 0,
+        "en": "I wonder where you are",
+        "pron": "Ai wuonder wer iu ar",
+        "es": "Me pregunto dónde estás"
+    },
+    {
+        "time": 0,
+        "en": "I wanted you to show me",
+        "pron": "Ai wuanted iu tu shou mi",
+        "es": "Quería que me mostraras"
+    },
+    {
+        "time": 0,
+        "en": "Entertain my",
+        "pron": "Entertein mai",
+        "es": "Alimenta mi"
+    },
+    {
+        "time": 0,
+        "en": "Entertain my",
+        "pron": "Entertein mai",
+        "es": "Alimenta mi"
+    },
+    {
+        "time": 0,
+        "en": "Entertain my",
+        "pron": "Entertein mai",
+        "es": "Alimenta mi"
+    },
+    {
+        "time": 0,
+        "en": "Entertain my",
+        "pron": "Entertein mai",
+        "es": "Alimenta mi"
+    },
+    {
+        "time": 0,
+        "en": "Entertain my",
+        "pron": "Entertein mai",
+        "es": "Alimenta mi"
+    },
+    {
+        "time": 0,
+        "en": "Entertain my",
+        "pron": "Entertein mai",
+        "es": "Alimenta mi"
+    },
+    {
+        "time": 0,
+        "en": "Entertain my",
+        "pron": "Entertein mai",
+        "es": "Alimenta mi"
+    },
+    {
+        "time": 0,
+        "en": "Entertain my faith",
+        "pron": "Entertein mai feiz",
+        "es": "Alimenta mi fe"
+    },
+    {
+        "time": 0,
+        "en": "This is the last time, this is the last time",
+        "pron": "Dis is de last taim, dis is de last taim",
+        "es": "Esta es la última vez, esta es la última vez"
+    },
+    {
+        "time": 0,
+        "en": "Entertain my faith",
+        "pron": "Entertein mai feiz",
+        "es": "Alimenta mi fe"
+    },
+    {
+        "time": 0,
+        "en": "This is the last time that I try",
+        "pron": "Dis is de last taim dat ai trai",
+        "es": "Esta es la última vez que trato de"
+    },
+    {
+        "time": 0,
+        "en": "Address my soul, address my soul, address my soul",
+        "pron": "Adres mai soul, adres mai soul, adres mai soul",
+        "es": "Dirigirme a mi alma, dirigirme a mi alma, dirigirme a mi alma"
+    },
+    {
+        "time": 0,
+        "en": "Entertain my faith",
+        "pron": "Entertein mai feiz",
+        "es": "Alimenta mi fe"
+    },
+    {
+        "time": 0,
+        "en": "This is the last time that I try",
+        "pron": "Dis is de last taim dat ai trai",
+        "es": "Esta es la última vez que trato de"
+    }
+];
+        let showPron = true; let showEsp = true;
+        const container = document.getElementById('lyrics-container');
+        const togglePronBtn = document.getElementById('toggle-pron');
+        const toggleEspBtn = document.getElementById('toggle-esp');
+        
+        function renderLyrics() {
+            if(!lyricsData || lyricsData.length === 0) {
+                container.innerHTML += `<div class="text-white/40 italic text-center mt-20">No se proporcionaron letras.</div>`;
+                return;
+            }
+            
+            lyricsData.forEach((lyric, index) => {
+                const block = document.createElement('div');
+                block.className = 'lyric-line inactive cursor-pointer py-2';
+                block.dataset.index = index;
+                
+                let htmlContent = '';
+                if(lyric.en) {
+                    htmlContent += `<div class="text-[24px] md:text-[28px] font-bold text-white tracking-tight leading-tight mb-1.5 layer-en">${lyric.en}</div>`;
+                }
+                if(lyric.pron) {
+                    htmlContent += `<div class="text-[14px] md:text-[15px] italic text-white/50 layer-pron mb-1 transition-all duration-300 ${showPron ? 'block' : 'hidden'}">${lyric.pron}</div>`;
+                }
+                if(lyric.es) {
+                    htmlContent += `<div class="text-[15px] md:text-[16px] text-white/70 layer-es transition-all duration-300 ${showEsp ? 'block' : 'hidden'}">${lyric.es}</div>`;
+                }
+                
+                block.innerHTML = htmlContent;
+                block.addEventListener('click', () => { 
+                    block.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                });
+                container.appendChild(block);
+            });
+        }
+        
+        function updateLayersVisibility() {
+            document.querySelectorAll('.layer-pron').forEach(el => el.style.display = showPron ? 'block' : 'none');
+            document.querySelectorAll('.layer-es').forEach(el => el.style.display = showEsp ? 'block' : 'none');
+        }
+        
+        togglePronBtn.addEventListener('click', () => { showPron = !showPron; togglePronBtn.classList.toggle('active'); updateLayersVisibility(); });
+        toggleEspBtn.addEventListener('click', () => { showEsp = !showEsp; toggleEspBtn.classList.toggle('active'); updateLayersVisibility(); });
+        
+        function initManualScrollSync() {
+            // Mejora UX: Lente de enfoque mucho más estricto (centro de la pantalla)
+            const observerOptions = { root: container, rootMargin: '-35% 0px -45% 0px', threshold: 0 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        document.querySelectorAll('.lyric-line').forEach(el => { el.classList.remove('active'); el.classList.add('inactive'); });
+                        entry.target.classList.remove('inactive'); entry.target.classList.add('active');
+                    }
+                });
+            }, observerOptions);
+            document.querySelectorAll('.lyric-line').forEach(line => observer.observe(line));
+        }
+        
+        renderLyrics();
+        // Timeout ligero para asegurar que el DOM esté listo antes de observar
+        setTimeout(initManualScrollSync, 100);
+    </script>
+</body>
+</html>
