@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goner - Spotify Desktop UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: #fff; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .lyric-line { transition: opacity 0.4s ease-out, transform 0.4s ease-out, text-shadow 0.4s ease; transform-origin: left center; scroll-margin-top: 200px; }
+        /* Mejora UX: Efecto de sombra suave para texto activo y escalado ajustado */
+        .lyric-line.active { opacity: 1 !important; transform: scale(1.04); text-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+        .lyric-line.inactive { opacity: 0.25; transform: scale(1); }
+        
+        .toggle-btn.active { background-color: rgba(255, 255, 255, 0.2); color: white; border-color: transparent; }
+        .toggle-btn { background-color: transparent; color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.3); }
+        
+        .bg-spotify-solid { background-color: #941F1F; transition: background-color 0.5s ease; }
+        .icon-solid { fill: currentColor; stroke: currentColor; }
+    </style>
+</head>
+<body class="bg-black min-h-screen flex items-center justify-center p-0 sm:p-4 md:p-6 lg:p-8">
+    <div class="w-full max-w-[1280px] h-[100dvh] sm:h-[85vh] sm:min-h-[680px] sm:rounded-2xl overflow-hidden bg-spotify-solid shadow-2xl flex flex-col relative">
+        <header class="w-full flex items-center justify-between px-8 py-6 relative z-20">
+            <div class="flex items-center gap-4">
+                <button class="p-2 bg-black/20 rounded-full text-white/80 hover:text-white hover:bg-black/40 transition-colors"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+                <div class="hidden md:flex flex-col">
+                    <span class="text-xs font-bold tracking-widest text-white/60 uppercase">Reproduciendo</span>
+                    <span class="text-sm font-bold text-white drop-shadow-md">Goner</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 bg-black/20 p-1.5 rounded-full backdrop-blur-md border border-white/5">
+                <span class="text-xs font-bold text-white/60 uppercase px-2 tracking-wider hidden sm:inline">Letras:</span>
+                <button id="toggle-pron" class="toggle-btn active px-4 py-1.5 text-xs font-bold rounded-full transition-all uppercase tracking-wider hover:bg-white/10">Pronunciación</button>
+                <button id="toggle-esp" class="toggle-btn active px-4 py-1.5 text-xs font-bold rounded-full transition-all uppercase tracking-wider hover:bg-white/10">Español</button>
+            </div>
+            <button class="p-2 text-white/80 hover:text-white transition-transform active:scale-95 hover:bg-black/10 rounded-full"><i data-lucide="maximize-2" class="w-5 h-5"></i></button>
+        </header>
+        
+        <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden relative z-10 px-8 pb-32">
+            <div class="lg:col-span-5 flex flex-col justify-center items-center lg:items-start text-center lg:text-left pb-6 lg:pb-0 lg:pr-8 border-b lg:border-b-0 lg:border-r border-white/10">
+                
+                <div class="w-[240px] h-[240px] md:w-[320px] md:h-[320px] rounded-xl shadow-2xl overflow-hidden relative group transition-transform duration-500 hover:scale-[1.02]" style="background-color: #941F1F">
+                    <img src="Portadas/goner-cover.jpg" alt="Goner Cover" class="w-full h-full object-cover transition-opacity duration-300" onerror="this.style.opacity='0'; this.parentElement.style.backgroundColor='#121212'">
+                </div>
+
+                <div class="mt-6 w-full max-w-[320px]">
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="truncate">
+                            <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight truncate drop-shadow-md">Goner</h1>
+                            <p class="text-base md:text-lg text-white/70 font-medium mt-1">Twenty One Pilots</p>
+                        </div>
+                        <button class="w-8 h-8 rounded-full bg-[#1ED760] flex items-center justify-center text-black shadow-md shrink-0 hover:scale-105 active:scale-95 transition-transform">
+                            <i data-lucide="check" class="w-5 h-5 stroke-[3]"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <main id="lyrics-container" class="lg:col-span-7 overflow-y-auto no-scrollbar pt-8 space-y-10 scroll-smooth pb-[40vh] lg:pl-12">
+                <div id="spacer-top" class="h-[10vh]"></div>
+            </main>
+        </div>
+        
+        <footer class="absolute bottom-0 left-0 w-full bg-black/85 backdrop-blur-xl border-t border-white/5 py-4 px-8 z-30 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="hidden sm:flex items-center gap-3 w-1/4">
+                <div class="w-14 h-14 rounded overflow-hidden flex items-center justify-center bg-gray-900 shadow-md">
+                    <img src="Portadas/goner-cover.jpg" alt="Mini Cover" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                </div>
+                <div class="flex flex-col truncate ml-1">
+                    <span class="text-sm font-bold text-white truncate hover:underline cursor-pointer">Goner</span>
+                    <span class="text-xs text-white/60 truncate hover:underline cursor-pointer">Twenty One Pilots</span>
+                </div>
+            </div>
+            <div class="flex flex-col items-center gap-2 w-full sm:w-2/4 max-w-[500px]">
+                <div class="flex items-center gap-6 opacity-80">
+                    <button class="text-[#1ED760] hover:scale-105 transition-transform"><i data-lucide="shuffle" class="w-4 h-4 stroke-[2.5]"></i></button>
+                    <button class="text-white hover:text-white transition-colors"><i data-lucide="skip-back" class="w-5 h-5 icon-solid"></i></button>
+                    <button class="w-8 h-8 flex items-center justify-center bg-white rounded-full text-black hover:scale-105 transition-transform">
+                        <i data-lucide="play" class="w-4 h-4 ml-0.5 icon-solid"></i>
+                    </button>
+                    <button class="text-white hover:text-white transition-colors"><i data-lucide="skip-forward" class="w-5 h-5 icon-solid"></i></button>
+                    <button class="text-white/70 hover:text-white transition-colors"><i data-lucide="repeat" class="w-4 h-4"></i></button>
+                </div>
+                <div class="w-full flex items-center gap-3">
+                    <span class="text-[11px] font-mono text-white/50">0:00</span>
+                    <div class="flex-1 h-1 bg-white/20 rounded-full relative group cursor-pointer hover:bg-white/30 transition-colors">
+                        <div class="h-full bg-white rounded-full w-0 group-hover:bg-[#1ED760] transition-colors"></div>
+                    </div>
+                    <span class="text-[11px] font-mono text-white/50">3:24</span>
+                </div>
+            </div>
+            <div class="hidden sm:flex items-center justify-end gap-4 w-1/4 text-white/60">
+                <button class="hover:text-white transition-colors"><i data-lucide="mic-2" class="w-4 h-4 text-[#1ED760]"></i></button>
+                <button class="hover:text-white transition-colors"><i data-lucide="list-music" class="w-4 h-4"></i></button>
+                <button class="hover:text-white transition-colors"><i data-lucide="monitor-speaker" class="w-4 h-4"></i></button>
+                <div class="flex items-center gap-2 w-20 group cursor-pointer">
+                    <i data-lucide="volume-2" class="w-4 h-4"></i>
+                    <div class="w-full h-1 bg-white/30 rounded-full group-hover:bg-white/40 transition-colors">
+                        <div class="w-2/3 h-full bg-white rounded-full group-hover:bg-[#1ED760] transition-colors"></div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        lucide.createIcons();
+        const lyricsData = [
+    {
+        "time": 0,
+        "en": "I'm a goner, somebody catch my breath",
+        "pron": "aim a gou-ner, som-ba-di kach mai breth",
+        "es": "Soy un desahuciado, que alguien atrape mi aliento"
+    },
+    {
+        "time": 0,
+        "en": "I'm a goner, somebody catch my breath",
+        "pron": "aim a gou-ner, som-ba-di kach mai breth",
+        "es": "Soy un desahuciado, que alguien atrape mi aliento"
+    },
+    {
+        "time": 0,
+        "en": "I want to be known by you",
+        "pron": "ai wont tu bi noun bai iu",
+        "es": "Quiero ser conocido por ti"
+    },
+    {
+        "time": 0,
+        "en": "I want to be known by you",
+        "pron": "ai wont tu bi noun bai iu",
+        "es": "Quiero ser conocido por ti"
+    },
+    {
+        "time": 0,
+        "en": "Though I'm weak and beaten down",
+        "pron": "dou aim wíik and bíi-ten daun",
+        "es": "Aunque estoy débil y golpeado"
+    },
+    {
+        "time": 0,
+        "en": "I'll slip away into the sound",
+        "pron": "ail es-lip a-wéi in-tu de sáund",
+        "es": "Me escabulliré dentro del sonido"
+    },
+    {
+        "time": 0,
+        "en": "The ghost of you is close to me",
+        "pron": "de góust of iu is klóus tu mi",
+        "es": "El fantasma de ti está cerca de mí"
+    },
+    {
+        "time": 0,
+        "en": "I'm inside out, you're underneath",
+        "pron": "aim in-sáid aut, iur on-der-níiz",
+        "es": "Estoy del revés, tú estás debajo"
+    },
+    {
+        "time": 0,
+        "en": "I've got two faces, blurry's the one I'm not",
+        "pron": "aiv got tu féi-ses, blé-ris de wuan aim not",
+        "es": "Tengo dos caras, la borrosa es la que no soy"
+    },
+    {
+        "time": 0,
+        "en": "I've got two faces, blurry's the one I'm not",
+        "pron": "aiv got tu féi-ses, blé-ris de wuan aim not",
+        "es": "Tengo dos caras, la borrosa es la que no soy"
+    },
+    {
+        "time": 0,
+        "en": "I need your help to take him out",
+        "pron": "ai nid iur jelp tu téik jim aut",
+        "es": "Necesito tu ayuda para sacarlo"
+    },
+    {
+        "time": 0,
+        "en": "I need your help to take him out",
+        "pron": "ai nid iur jelp tu téik jim aut",
+        "es": "Necesito tu ayuda para sacarlo"
+    },
+    {
+        "time": 0,
+        "en": "Though I'm weak and beaten down",
+        "pron": "dou aim wíik and bíi-ten daun",
+        "es": "Aunque estoy débil y golpeado"
+    },
+    {
+        "time": 0,
+        "en": "I'll slip away into the sound",
+        "pron": "ail es-lip a-wéi in-tu de sáund",
+        "es": "Me escabulliré dentro del sonido"
+    },
+    {
+        "time": 0,
+        "en": "The ghost of you is close to me",
+        "pron": "de góust of iu is klóus tu mi",
+        "es": "El fantasma de ti está cerca de mí"
+    },
+    {
+        "time": 0,
+        "en": "I'm inside out, you're underneath",
+        "pron": "aim in-sáid aut, iur on-der-níiz",
+        "es": "Estoy del revés, tú estás debajo"
+    },
+    {
+        "time": 0,
+        "en": "Though I'm weak and beaten down",
+        "pron": "dou aim wíik and bíi-ten daun",
+        "es": "Aunque estoy débil y golpeado"
+    },
+    {
+        "time": 0,
+        "en": "I'll slip away into the sound",
+        "pron": "ail es-lip a-wéi in-tu de sáund",
+        "es": "Me escabulliré dentro del sonido"
+    },
+    {
+        "time": 0,
+        "en": "The ghost of you is close to me",
+        "pron": "de góust of iu is klóus tu mi",
+        "es": "El fantasma de ti está cerca de mí"
+    },
+    {
+        "time": 0,
+        "en": "I'm inside out, you're underneath",
+        "pron": "aim in-sáid aut, iur on-der-níiz",
+        "es": "Estoy del revés, tú estás debajo"
+    },
+    {
+        "time": 0,
+        "en": "Don't let me be gone",
+        "pron": "dont let mi bi gón",
+        "es": "No dejes que me haya ido"
+    },
+    {
+        "time": 0,
+        "en": "Don't let me be gone",
+        "pron": "dont let mi bi gón",
+        "es": "No dejes que me haya ido"
+    },
+    {
+        "time": 0,
+        "en": "Don't let me be gone",
+        "pron": "dont let mi bi gón",
+        "es": "No dejes que me haya ido"
+    },
+    {
+        "time": 0,
+        "en": "Don't let me be gone",
+        "pron": "dont let mi bi gón",
+        "es": "No dejes que me haya ido"
+    },
+    {
+        "time": 0,
+        "en": "Don't let me be...",
+        "pron": "dont let mi bi...",
+        "es": "No dejes que sea..."
+    },
+    {
+        "time": 0,
+        "en": "Don't let me be...",
+        "pron": "dont let mi bi...",
+        "es": "No dejes que sea..."
+    },
+    {
+        "time": 0,
+        "en": "Don't let me be...",
+        "pron": "dont let mi bi...",
+        "es": "No dejes que sea..."
+    },
+    {
+        "time": 0,
+        "en": "(I'm a goner, somebody catch my breath)",
+        "pron": "(aim a gou-ner, som-ba-di kach mai breth)",
+        "es": "(Soy un desahuciado, que alguien atrape mi aliento)"
+    }
+];
+        let showPron = true; let showEsp = true;
+        const container = document.getElementById('lyrics-container');
+        const togglePronBtn = document.getElementById('toggle-pron');
+        const toggleEspBtn = document.getElementById('toggle-esp');
+        
+        function renderLyrics() {
+            if(!lyricsData || lyricsData.length === 0) {
+                container.innerHTML += `<div class="text-white/40 italic text-center mt-20">No se proporcionaron letras.</div>`;
+                return;
+            }
+            
+            lyricsData.forEach((lyric, index) => {
+                const block = document.createElement('div');
+                block.className = 'lyric-line inactive cursor-pointer py-2';
+                block.dataset.index = index;
+                
+                let htmlContent = '';
+                if(lyric.en) {
+                    htmlContent += `<div class="text-[24px] md:text-[28px] font-bold text-white tracking-tight leading-tight mb-1.5 layer-en">${lyric.en}</div>`;
+                }
+                if(lyric.pron) {
+                    htmlContent += `<div class="text-[14px] md:text-[15px] italic text-white/50 layer-pron mb-1 transition-all duration-300 ${showPron ? 'block' : 'hidden'}">${lyric.pron}</div>`;
+                }
+                if(lyric.es) {
+                    htmlContent += `<div class="text-[15px] md:text-[16px] text-white/70 layer-es transition-all duration-300 ${showEsp ? 'block' : 'hidden'}">${lyric.es}</div>`;
+                }
+                
+                block.innerHTML = htmlContent;
+                block.addEventListener('click', () => { 
+                    block.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                });
+                container.appendChild(block);
+            });
+        }
+        
+        function updateLayersVisibility() {
+            document.querySelectorAll('.layer-pron').forEach(el => el.style.display = showPron ? 'block' : 'none');
+            document.querySelectorAll('.layer-es').forEach(el => el.style.display = showEsp ? 'block' : 'none');
+        }
+        
+        togglePronBtn.addEventListener('click', () => { showPron = !showPron; togglePronBtn.classList.toggle('active'); updateLayersVisibility(); });
+        toggleEspBtn.addEventListener('click', () => { showEsp = !showEsp; toggleEspBtn.classList.toggle('active'); updateLayersVisibility(); });
+        
+        function initManualScrollSync() {
+            // Mejora UX: Lente de enfoque mucho más estricto (centro de la pantalla)
+            const observerOptions = { root: container, rootMargin: '-35% 0px -45% 0px', threshold: 0 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        document.querySelectorAll('.lyric-line').forEach(el => { el.classList.remove('active'); el.classList.add('inactive'); });
+                        entry.target.classList.remove('inactive'); entry.target.classList.add('active');
+                    }
+                });
+            }, observerOptions);
+            document.querySelectorAll('.lyric-line').forEach(line => observer.observe(line));
+        }
+        
+        renderLyrics();
+        // Timeout ligero para asegurar que el DOM esté listo antes de observar
+        setTimeout(initManualScrollSync, 100);
+    </script>
+</body>
+</html>
